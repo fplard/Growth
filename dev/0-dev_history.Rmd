@@ -17,7 +17,7 @@ fusen::fill_description(
   pkg = here::here(),
   fields = list(
     Title = "Bayesian growth analysis",
-    Description = "Yse bayesian approach to builg growth model with random effect",
+    Description = "Use bayesian approach to builg growth model with random effect",
     `Authors@R` = c(
         person("Floriane", "Plard", email = "floriane.c.plard@gmail.com", role = c("aut", "cre", "ctr")),
       person("Species", "360", email = "Support@Species360.org", role = c("cph"))
