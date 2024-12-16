@@ -1,0 +1,546 @@
+---
+title: "flat_nimble.Rmd empty"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r development, include=FALSE}
+library(testthat)
+library(assertthat)
+library(nimble)
+library(glue)
+library(tidyverse)
+```
+
+
+```{r development-load}
+# Load already included functions if relevant
+pkgload::load_all()
+```
+
+
+This vignette presents a collection of useful functions used in the main functions of this package to run nimble models and get simplified outputs. They usually do not need to be run on their own.
+
+
+
+```{r function-runnimble}
+#' Run nimble
+#' 
+#' This function can be used to speed up the number of lines to write to run a classical `nimble` model.
+#'
+#' @param model \code{a nimble model}
+#' @param const \code{list} of constants
+#' @param data_nim \code{list} of data
+#' @param inits_nim \code{list} of initial values
+#' @param param \code{vector of characters} names of parameters to return
+#' @param seed \code{numeric} for reproducibility
+#' @param model_type \code{vector of characters} 'Fus', 'Cat' or 'dsm'. see details
+#' @param narandom {vector of characters} of the parameters that should not include an individual random effect
+#' @param run \code{list} Bayesian parameters used for `nimble`. They should be increased to reach convergence \itemize{
+#' \item \code{nch} number of chains. Default = 1
+#' \item \code{nthin} interval between iterations to keep. Default = 1 
+#' \item \code{nburnin} number of iterations to discard. Default = 10 
+#' \item \code{nit} total number of iterations. Default = 50 
+#' }
+#' @param enableWAIC \code{logical} whether the wAIC should be computed
+#' @param x \code{one value} index of the model. Internal use to create tempdirectory and avoid deleting other 
+#'
+#' @return \code{list}
+#' \itemize{\item \code{coef} matrix gathering coefficient values. The number of rows is the number of chains times the number of iterations saved
+#'          \item \code{convergence} numeric vector- Rhat values
+#'          \item \code{WAIC} as estimated by nimble functions}
+#' 
+#' @import nimble assertthat
+#' 
+#' @examples
+#' model = glue::glue("
+#'                    for(i in 1:2){{b[i] ~ dnorm(0,0.01)}}
+#'                    sigma_y ~ dunif(0,10)
+#'                    for(i in 1:N){{
+#'                       Y[i] ~ dnorm(b[1] + b[2]*X[i] , sd = sigma_y)}}
+#'                    ")
+#' X = sample(c(1:10), 10, replace = TRUE)
+#' 
+#' \dontrun{
+#'outnim <- runnimble(parse(text = model),
+#'                    const = list(N=10),
+#'                    data_nim = list(X = X, Y = 0.1 - 4 *X),
+#'                    distri='hn',
+#'                    inits_nim = list(b=rep(0,2), sigma_y = 1),
+#'                    param = c('b', "sigma_y"))
+#'}
+#' 
+#' @noRd
+#'
+runnimble <- function(model,
+                      const,
+                      data_nim,
+                      inits_nim,
+                      param,
+                      seed = 0,
+                      model_type = "",
+                      run = list(nthin = 1,
+                                 nburnin = 10,
+                                 niter = 50,
+                                 nch = 1),
+                      enableWAIC = TRUE,
+                      x = 0
+                      
+) {
+  ## This block is necessary because nimble keeps some big temporary files that saturate memory
+  ## needs to be changed when nimble will have solved these issues
+  B <- paste0(tempdir(check = TRUE), '\\tempesw',x)
+  dir.create(B)
+  saveRDS(list(model_nim = model, 
+               const_nim = const, 
+               data_nim = data_nim, 
+               inits_nim = inits_nim,
+                run = run,
+               parameters = param,
+               model_type = model_type), 
+          file = paste0(B,"\\arg.rds"))
+  le_chemin_script <- system.file("nimblescript.R", package = "Growth")
+  system2("Rscript", paste0(le_chemin_script," ",B,"\\arg.rds"), stdout = T,
+          stderr = T,  invisible = F)
+  chain_output <- readRDS(normalizePath(paste0(B,"\\arg.rds")))
+  unlink(B, recursive = TRUE)
+  ####
+  
+  mval=(run$nit-run$nburnin)/run$nthin
+  if(run$nch ==1){
+    temp <-chain_output$samples
+    chain_output$samples<-list()
+    chain_output$samples[[1]] <- temp
+  }
+  rb=array(NA,dim=c(mval,run$nch,ncol(chain_output$samples[[1]])))
+  rb2 <- array(NA, dim=c(mval*run$nch,ncol(chain_output$samples[[1]])))
+  for (i in 1:run$nch) {
+    rb[,i,]=chain_output$samples[[i]]
+    rb2[(1:mval)+mval*(i-1),]=chain_output$samples[[i]]
+  }
+  colnames(rb2)<-colnames(chain_output$samples[[1]])
+  
+  if(run$nch >1){
+    conv=Rhatfun(rb,run$nch,mval,dim(rb)[3])
+  }else{conv = NULL}
+  
+  return(list(coef = rb2, 
+              convergence = conv,
+              WAIC = chain_output$WAIC)
+  )
+}
+```
+
+## Manipulate nimble outputs
+
+### Estimate Rhat values
+
+The function `Rhatfun()` allows to take outputs of nimble chains and to estimate Rubin Gelman convergence statistics.
+
+```{r function-Rhatfun}
+#' Estimate Rhat values
+#' 
+#' Derived Rubin Gelman convergence statistics from output chains of a Bayesian model
+#' 
+#' @param rb \code{array of dimension 3} estimates of output chains of a bayesian model. The rows should be the iterations, the column the different chains and the 3rd dimension the parameters
+#' @param nch \code{numeric} number of chains
+#' @param it \code{numeric} number of iterations
+#' @param nparam \code{numeric} number of parameters
+#'
+#' @return \code{numeric vector} of size \code{nparam} giving Rhat statistics for each parameter
+#' @import assertthat
+#' @importFrom stats var cov median 
+#'  
+#' @export
+Rhatfun<-function(rb,nch,it,nparam){
+  
+  assert_that(is.numeric(nch))
+  if(nch==1){stop("Need more than 1 chain to estimate Rhat")}
+  
+  assert_that(is.numeric(it))
+  assert_that(is.numeric(nparam))
+  assert_that(is.array(rb))
+  
+  if(length(dim(rb))!=3){stop("rb should be of dimension 3")}
+  if(dim(rb)[1]!=it){stop("Dimension 1 of rb should be iterations")}
+  if(dim(rb)[3]!=nparam){stop("Dimension 3 of rb should be parameters")}
+  if(dim(rb)[2]!=nch){stop("Dimension 2 of rb should be chains")}
+  
+  vari=apply(rb,c(2,3),var)
+  mea=apply(rb,c(2,3),mean)
+  meag=apply(rb,3,mean)
+  
+  W=apply(vari,2,mean)
+  W1=apply(vari,2,var)
+  B=apply(mea,2,var)
+  cov1=cov2=rep(0,nparam)
+  for (i in 1:nparam){
+    cov1[i]=cov(vari[,i],y=(mea^2)[,i])
+    cov2[i]=cov(vari[,i],y=mea[,i])
+  }
+  sig2=((it-1)/it)*W+B
+  V=sqrt(sig2+B/3)^2
+  varV=((it-1)/it)^2/3*W1+(4/3)^2*B^2+2*(it-1)*4/(9*it)*(cov1-2*meag*cov2)
+  df=2*V^2/varV
+  Rhat=abs((V/W*df)/(df-2))
+  
+  return(Rhat)
+}
+```
+
+
+```{r example-Rhatfun}
+rb = array(rnorm(15*3*4), dim = c(15,3,4))
+Rhatfun(rb, nch = 3, it = 15, nparam = 4)
+
+```
+
+
+```{r tests-Rhatfun}
+
+test_that("Rhatfun works", {
+  rb = array(rnorm(15*3*4), dim = c(15,3,4))
+  expect_gte(sum(Rhatfun(rb, nch = 3, it = 15, nparam = 4)),
+             0)
+  expect_error(Rhatfun(rb, nch = 2, it = 15, nparam = 4))
+})
+```
+
+
+### Summary
+
+The function `sum_nim()` makes a summary table with main statistics for each parameter from output chains of a Bayesian model
+
+
+```{r function-sum_nim}
+#' Summary statistics
+#' 
+#' Makes a summary table with main statistics for each parameter from output chains of a Bayesian model
+#' 
+#' @param rb2 \code{array} of dimension 3 or 2 including estimates of output chains of a bayesian model. If of dimension 3, the rows should be the iterations, the columns the different chains and the 3rd dimension the parameters. If of dimension 2, the rows should be the iterations and chains, and the columns the parameters.
+#' @param nch \code{numeric} number of chains
+#'
+#' @return A summary matrix with columns giving mean, sd, credible interval at 2.5% and 97.5%, and Rubin Gelman Rhat statistic. The different parameters are on lines. 
+#' 
+#' @import assertthat
+#' @importFrom stats sd quantile median 
+#' 
+#' @export
+sum_nim<-function(rb2, nch){
+  
+  assert_that(is.numeric(nch))
+  assert_that(is.array(rb2))
+  
+  if(length(dim(rb2))!=3 & length(dim(rb2))!=2){stop("rb2 should be of dimension 3 or 2")}
+  
+  if(length(dim(rb2))==2){
+    rb =rb2
+    m=dim(rb)[1]/nch
+    rb2 = array(NA, dim = c(m, nch, dim(rb)[2]))
+    for (i in 1:nch){rb2[,i,] = rb[(i-1)*m+(1:m),]}
+    dimnames(rb2)[[3]] = colnames(rb)
+  }   
+  m=dim(rb2)[1]
+  assert_that(nch == dim(rb2)[2])
+  long=dim(rb2)[3]
+  sumres=matrix(NA,nrow=dim(rb2)[3],ncol=5)
+  rownames(sumres)=dimnames(rb2)[[3]]
+  colnames(sumres)=c('mean','sd','QI 2.5','QI 97.5','Rhat')
+  sumres[,1]=   apply(rb2,3, mean)
+  sumres[,2]=   apply(rb2,3, sd)
+  sumres[,3]=   apply(rb2,3, quantile,0.025)
+  sumres[,4]=   apply(rb2,3,quantile,0.975)
+  if(nch> 1) {
+    sumres[,5]=   Rhatfun(rb2,nch,m,long)}
+  
+  
+  return(as.data.frame(sumres))
+}
+
+```
+
+```{r example-sum_nim}
+rb = array(rnorm(15*3*4), dim = c(15,3,4))
+sum_nim(rb, nch = 3)
+
+```
+
+```{r tests-sum_nim}
+
+test_that("sum_nim works", {
+  rb = array(rnorm(15*3*4), dim = c(15,3,4))
+  expect_equal(sum_nim(rb2 = rb, nch = 3)%>%
+                 colnames, c('mean','sd','QI 2.5','QI 97.5','Rhat'))
+  expect_equal(sum_nim(rb2 = rb, nch = 3)%>%
+                 nrow, 4)
+  expect_error(sum_nim(rb2 = rb, nch = 2))
+})
+```
+
+## Histogram for posterior distribution
+
+The function `hist_post()` prepares a histogram ggplot for posterior distribution of a given parameter. It can be used within codes for plotting grids of posterior distributions of several parameters. It takes a numeric vector `x` as argument.
+
+
+```{r function-hist_post}
+#' Histogram
+#' 
+#' Prepare a histogram ggplot for posterior distribution of a given parameter. To be used within codes for plotting grids of posterior distributions of several parameters.
+#' 
+#' @param x \code{numeric vector} raw estimates of parameters
+#' @param namex \code{character} x axis label
+#' @param namelab \code{character} title label of the plot
+#'
+#' @return histogram plot
+#' 
+#' @importFrom graphics hist 
+#' @importFrom ggplot2 ggplot geom_tile ylab xlab aes
+#' @import assertthat
+#' 
+#' @export
+hist_post<-function(x, namex = "", namelab = ""){
+  assert_that(is.numeric(x))
+  assert_that(is.vector(x))
+  nom = eval(namelab)
+  ggplot2::ggplot() +
+    geom_tile(data = data.frame(x = hist(x,plot = FALSE)$mids, 
+                                y = hist(x,plot = FALSE)$density),
+              aes(x=x,y=y/2,height = y),
+              width = diff(hist(x,plot = FALSE)$mids[c(1,2)]), 
+              fill = "midnightblue", color = "white") +
+    ggpp::geom_text_npc(aes(npcx = "right", npcy ="top", label= nom ,size=3.5))+
+    ylab("Density") + xlab(namex)
+}
+```
+
+
+```{r example-hist_post}
+hist_post(rnorm(1000))
+```
+
+
+```{r tests-hist_post}
+test_that("hist_post returns ggplot object",{
+  p <- hist_post(rnorm(1000))
+  expect_is(p,"ggplot")
+  # expect_that(df, equals(p$data))
+})
+
+test_that("hist_post uses correct labels & geometry",{
+  p <- hist_post(rnorm(1000))
+  expect_equal(p$labels$y,"Density")
+  expect_equal(class(p$layers[[1]]$geom)[1],"GeomTile")
+  expect_equal(class(p$layers[[1]]$stat)[1],"StatIdentity")
+})
+
+
+```
+
+
+
+
+## Plots for convergence
+
+The function `conv_plot()` prepares a ggplot to loog at convergence of posterior distribution of a given parameter. It takes a numeric vector `x` as argument and `m` the number of iteration.
+
+
+```{r function-conv_plot}
+#' Plot for convergence
+#' 
+#' Prepare a histogram ggplot for posterior distribution of a given parameter. To be used within codes for plotting grids of posterior distributions of several parameters.
+#' 
+#' @param x \code{numeric vector} raw estimates of parameters
+#' @param m \code{numeric} number of iterations
+#'
+#' @return plot
+#' 
+#' @importFrom graphics hist 
+#' @importFrom ggplot2 ggplot geom_tile ylab xlab aes
+#' @import assertthat
+#' 
+#' @export
+conv_plot<-function(x, m ){
+  assert_that(is.numeric(x))
+  assert_that(is.numeric(m))
+nch = length(x)/m
+  data = data.frame(x = x, xline = rep(1:m,nch), chain = as.factor(rep(1:nch,each=m)))
+  p=ggplot2::ggplot(data) +
+    geom_line(aes(y=x, x = xline,group = chain, color = chain))+
+    ylab("value") + xlab("")
+  return(p)
+}
+```
+
+
+```{r example-conv_plot}
+conv_plot(rnorm(1500), m =500)
+```
+
+
+```{r tests-conv_plot}
+test_that("conv_plot returns ggplot object",{
+  p <- conv_plot(rnorm(1500), m =500)
+  expect_is(p,"ggplot")
+})
+
+test_that("conv_plot uses correct labels & geometry",{
+  p <- conv_plot(rnorm(1000), m =500)
+  expect_equal(p$labels$y,"value")
+  expect_equal(class(p$layers[[1]]$geom)[1],"GeomLine")
+})
+
+
+```
+
+
+
+
+# Write nimble codes
+
+
+The function `Gro_writenimblecode()` writes a nimble code for a growth model including individual random effect. It takes as argument:
+
+* `params` names of all parameters of the model. 
+* `model` likelihood of the nimble model
+* `random`  name of the parameters that must include an individual random effect
+* `maxval` list including the maximum values for prior for each parameter
+* `minval` list including the minimum values for prior for each parameter
+
+
+```{r function-Gro_writenimblecode}
+#' Write nimble code for growth model
+#' 
+#' Write the nimble code needed to run growth model including random effects
+#' 
+#' @param params \code{vector of character} names of all parameters of the model. 
+#' @param model \code{character} likelihood of the nimble model
+#' @param random \code{vector of character} name of the parameters that must include an individual random effect
+#' @param maxval \code{list} including the maximum values for prior for each parameter. Default value is 1000.
+#' @param minval \code{list} including the minimum values for prior for each parameter.Default value is 0.
+#'
+#' @return A character representing a nimble model
+#' 
+#' @importFrom glue glue
+#' @importFrom stringr str_detect
+#' @import assertthat
+#' @export
+
+Gro_writenimblecode <- function(params, model,
+                                random= c() , 
+                                maxval= list() , 
+                                minval =list()
+                                ) {
+  
+  
+  assert_that(is.character(params))
+  if(length(random)>0) {
+    assert_that(is.character(random))
+  assert_that(all(random %in% params))
+  }
+  assert_that(is.character(model))
+  assert_that(stringr::str_detect(model,"j in 1:N"))
+  assert_that(is.list(maxval))
+  if(length(maxval)>0) {
+    assert_that(all(names(maxval) %in% params))
+  }
+    assert_that(is.list(minval))
+    if(length(minval)>0) {
+    assert_that(all(names(minval) %in% params))
+    }
+    
+prior ="sigma_res~ dunif(0, 5)"
+  for (p in params){
+    assert_that(str_detect(model, p), msg = glue("{p} not included in the likelihood of the model"))
+    
+      if(!(p %in% names(maxval)) ){maxval[[p]] <-1000}
+      if(!(p %in% names(minval)) ){minval[[p]] <-0}
+      if(p %in% random){
+        prior <- glue("{prior} 
+         mu_{p}~ dunif({minval[[p]]}, {maxval[[p]]})
+         sigma_{p}~ dunif(0, 5)
+         for (i in 1:Nind){{
+         {p}[i] ~ dnorm(mu_{p}, sd = sigma_{p}) }}
+        ")
+        }else{
+          prior <- glue("{prior} 
+         mu_{p}~ dunif({minval[[p]]}, {maxval[[p]]})
+         for (i in 1:Nind){{
+         {p}[i] <- mu_{p} }}
+        ")
+        }
+      }
+        
+  a=glue("
+      {prior}
+      {model}
+      ")
+  
+  b=parse(text=a)
+  return( bquote(.(b)))
+}
+
+```
+
+```{r example-esw_writenimblecode}
+#Example for a von bertalanffy model
+Gro_writenimblecode(params = c('z0', 'zinf', 'gamma'), 
+                    model = "for (j in 1:N){{
+       logz[j] ~dnorm(z0[IND[j]] + zinf[IND[j]] * 
+       (1 - exp(- gamma[IND[j]] * logx[j])), sigma_res)}}",
+                    random = "gamma",
+                    maxval = list(z0 = 5), 
+                    minval= list(z0 = 0, zinf = 0, gamma = 0)
+)
+```
+
+```{r tests-esw_writenimblecode}
+
+test_that("Gro_writenimblecode errors", {
+  expect_error(
+   Gro_writenimblecode(params = c('z0', 'zinf', 'gamma'), 
+                    model = "for (j in 1:N){{
+       logz[j] ~dnorm(zinf[IND[j]] * (1 - exp(- gamma[IND[j]] * logx[j])), sigma_res)}}"
+),
+    regexp = "z0 not included in the likelihood of the model")
+     expect_error(
+   Gro_writenimblecode(params = c('z0', 'zinf', 'gamma'), 
+                       random = "a",
+                    model = "for (j in 1:N){{
+       logz[j] ~dnorm(zinf[IND[j]] +z0 +* (1 - exp(- gamma[IND[j]] * logx[j])), sigma_res)}}"),
+    regexp = "lements 1 of random %in% params are not true")
+})
+
+test_that("Gro_writenimblecode works", {
+ 
+  a =Gro_writenimblecode(params = c('z0', 'zinf', 'gamma'), 
+                    model = "for (j in 1:N){{
+       logz[j] ~dnorm(z0[IND[j]] + zinf[IND[j]] * (1 - exp(- gamma[IND[j]] * logx[j])), sigma_res)}}",
+                    random = "gamma",
+                    maxval = list(z0 = 5), 
+                    minval= list(z0 = 0, zinf = 0, gamma = 0)
+)
+  expect_equal(
+    a%>%as.character(),
+               c("sigma_res ~ dunif(0, 5)", "mu_z0 ~ dunif(0, 5)", 
+                 "for (i in 1:Nind) {\n    z0[i] <- mu_z0\n}",
+                 "mu_zinf ~ dunif(0, 1000)",
+                 "for (i in 1:Nind) {\n    zinf[i] <- mu_zinf\n}", 
+                 "mu_gamma ~ dunif(0, 1000)", 
+                 "sigma_gamma ~ dunif(0, 5)", 
+                 "for (i in 1:Nind) {\n    gamma[i] ~ dnorm(mu_gamma, sd = sigma_gamma)\n}", 
+                 "for (j in 1:N) {\n    {\n        logz[j] ~ dnorm(z0[IND[j]] + zinf[IND[j]] * (1 - exp(-gamma[IND[j]] * logx[j])), sigma_res)\n    }\n}" ))
+})
+
+
+
+```
+
+
+
+
+```{r development-inflate, eval=FALSE}
+# Run but keep eval=FALSE to avoid infinite loop
+# Execute in the console directly
+fusen::inflate(flat_file = "dev/flat_nimble.Rmd", vignette_name = "Useful Functions", check = FALSE, overwrite = T)
+```
