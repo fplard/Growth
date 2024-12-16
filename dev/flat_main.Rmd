@@ -10,7 +10,7 @@ library(testthat)
 ```
 
 <!--
- You need to run the 'description' chunk in the '0-dev_history.Rmd' file before continuing your code there.
+You need to run the 'description' chunk in the '0-dev_history.Rmd' file before continuing your code there.
 -->
 
 ```{r development-load}
@@ -18,33 +18,775 @@ library(testthat)
 pkgload::load_all(export_all = FALSE)
 ```
 
-# main
 
-```{r function-main}
-#' main Title
+#### Install `nimble`
+
+If you never used the package `nimble`, you first need to install it following recommendations [here](https://r-nimble.org/download)
+
+
+
+# Run a single model
+
+The function `Gro_run()` allows to run one growth model. This function takes as arguments:
+
+* `x` the index of the formula to use 
+* `dat` including at least the numeric columns *Age*, *MeasurementValue* and *AnimalAnonID* 
+* `all_mods` a vector of model names. The following models are supported : logistic, gompertz, tpgm, power, richards, vonbertalanffy, and fabens.
+* `random` list of the model names giving the parameters that should be included an individual random effect
+* `run`: a list of Bayesian parameters including `nch` number of chains, `nthin` interval between iterations to keep, `nburnin` number of iterations to discard and `niter` total number of iterations. The default number of iterations is too small and need to be increased to reach convergence.
+
+Only the model of index `x` will be used to run the model. 
+
+The function returns:
+
+* `model` a list including estimates of coefficients and model characteristics
+* `tab` a data frame with information on model wAIC
+
+
+
+
+```{r function-gro_run}
+#' Run growth model
+#' 
+#' Build and run the bayesian growth model `x` of `all_mods`.
+#' 
+#' @param x \code{numeric} index of the formula used to build the model
+#' @param all_mods \code{vector of characters} of model names. The following models are supported: logistic, gompertz, tpgm, power, richards, vonbertalanffy, and fabens.
+#' @param dat \code{data.frame}including at least the numeric columns *logx*, *logz* and *IND*
+#' @param random {vector of character} of the same length as \code{all_mods} giving the parameters that should be included an individual random effect
+#' @param run \code{list} Bayesian parameters. They should be increased to reach convergence \itemize{
+#' \item \code{nch} number of chains.
+#' \item \code{nthin} interval between iterations to keep.
+#' \item \code{nburnin} number of iterations to discard.
+#' \item \code{nit} total number of iterations.
+#' }
 #'
-#' @return 1
+#' @return This function returns a \code{list}:
+#'         \itemize{
+#'           \item \code{model} a list including estimates of coefficients and model characteristics
+#'           \item \code{tab} a data frame with information on models & WAIC
+#'           }
+#' 
+#' @import dplyr assertthat nimble
+#' 
 #' @export
-#'
-#' @examples
-main <- function() {
-  1
+Gro_run<-function(x, 
+                  dat,
+                  all_mods,
+                  random = "",
+                  run = list(nit = 100, nburnin = 10, nthin = 1, nch = 1)){
+  
+  assert_that(is.numeric(x))
+  assert_that(x>0)
+  assert_that(is.vector(all_mods))
+  assert_that(is.character(all_mods))
+  assert_that(x<= length(all_mods))
+  assert_that(is.data.frame(dat))
+  assert_that(dat %has_name% c('logx', 'logz', 'IND'))
+  assert_that(is.numeric(dat$logx))
+  assert_that(is.numeric(dat$logz))
+  assert_that(run %has_name% c("nit", "nburnin", "nthin", "nch"))
+  assert_that(is.character(random))
+  model_type=all_mods[x]
+  random_mod = strsplit(random[x], 
+                        paste(c(","," ", ";"), collapse = "|"))%>%
+    unlist%>%
+    stringi::stri_remove_empty()
+  
+  model_gro<-Gro_ModSettings(dat, random = random_mod, mod =  model_type)
+  
+  param = stringr::str_subset(model_gro$parameters, '_', negate = T)
+  if(length(random_mod)>1){
+    for(r in random_mod)
+      assert_that(r %in% param, msg = glue::glue("{r} is not a parameter of the model}"))
+  }
+  model_nimble = Gro_writenimblecode(params = param, 
+                                     model = model_gro$model_nim,
+                                     random = random_mod,
+                                     maxval = model_gro$maxval, 
+                                     minval= model_gro$minval
+  )
+  outnim <- runnimble(model = model_nimble,
+                      const = model_gro$const_nim,
+                      data_nim =  model_gro$data_nim,
+                      inits_nim = model_gro$inits_nim,
+                      param = model_gro$parameters,
+                      run = run,
+                      model_type = model_type,
+                      x = x)
+  
+  out=list()
+  out$model=list(model_type = model_type,
+                 random = random_mod,
+                 coef = as.data.frame(outnim$coef),
+                 run = run,
+                 params = param,
+                 model_fun = model_gro$model_fun
+  )
+  
+  out$tab <- data.frame(
+    model_type = model_type,
+    random = stringr::str_c(random_mod, collapse = ", "),
+    index = x,
+    Nparam =  (length(model_gro$param)-1),
+    WAIC = outnim$WAIC$WAIC,
+    lppd = outnim$WAIC$lppd
+    
+  )
+  return(out)
 }
 ```
 
-```{r examples-main}
-main()
+
+```{r example-gro_run}
+logx <- rnorm(10000, 0, 1)
+id1 =  rnorm(21,0, 0.5)
+id2 =  rnorm(21,0, 0.4)
+id3 =  rnorm(21,0, 0.3)
+IND =sample(c(1:20), 100, replace = TRUE)
+logz <- 0.2+ id1[IND]+ (15 + id2[IND])* (1 - exp(-(1+ id3[IND]) * logx)) +
+  rnorm(100, 0, 0.01)
+dat = data.frame(logx = logx, logz = logz, 
+                 IND = as.numeric(factor(IND ,labels = c(1:length(unique(IND)))))
+)
+
+#Run a vonbertalanffy model including an individual effect on z0
+out = Gro_run(1, 
+              dat,
+              all_mods  = c("vonbertalanffy"),
+              random = c("z0"),
+              run = list(nit = 5000, nburnin = 1000, nthin = 10, nch = 3))
+out$tab
+
 ```
 
-```{r tests-main}
-test_that("main works", {
 
+```{r tests-Gro_run}
+logx <- rnorm(10000, 0, 1)
+id1 =  rnorm(21,0, 0.5)
+IND =sample(c(1:20), 100, replace = TRUE)
+logz <- 0.2+ id1[IND]+ (15 )* (1 - exp(-(1) * logx)) +rnorm(100, 0, 0.01)
+dat = data.frame(logx = logx, logz = logz, IND = as.numeric(factor(IND , labels = c(1:length(unique(IND)))))
+)
+
+test_that("Gro_run work", {
+  a = Gro_run(1, 
+              all_mods  = c("vonbertalanffy", "fabens"),
+              dat,random = c("z0"),
+              run = list(nit = 1000, nburnin = 100, nthin = 1, nch = 1))
+  expect_named(a,c("model","tab"))
+  expect_equal(a$model$coef%>%
+                 nrow, 900 )
+  expect_named(a$tab, c("model_type", "random", "index","Nparam", "WAIC", "lppd"))
+})
+
+```
+
+
+
+
+# Growth analysis: run multiple models
+This function fits a series of growth models to a dataset, and select the best one by wAIC. It takes as arguments:
+
+* data_weight including at least the numeric columns *Age*, *MeasurementValue* and *AnimalAnonID* 
+* all_mods indicating the growth models that need to be fit.The following models are supported : logistic, gompertz, tpgm, power, richards, vonbertalanffy  and fabens. default = "vonBertalanffy"
+* `random` list of the model names giving the parameters that should include an individual random effect. See the example
+
+
+```{r function-Gro_analysis}
+
+#' Growth model selection
+#' 
+#' This function fit a series of growth models to a dataset and select the best one by wAIC.
+#' 
+#' @param data_weight \code{data.frame} including at least the numeric columns *Age*, *MeasurementValue* and *AnimalAnonID* 
+#' @param all_mods \code{vector of character} indicating the growth models that need to be fit.The following models are supported :logistic, gompertz, tpgm, power, richards, vonbertalanffy , and fabens. default = "vonBertalanffy"
+#' @param random {list} of the model names giving the parameters that should include an individual random effect. See the example
+#' @param run \code{list} Bayesian parameters. They should be increased to reach convergence \itemize{
+#' \item \code{nch} number of chains.
+#' \item \code{nthin} interval between iterations to keep.
+#' \item \code{nburnin} number of iterations to discard.
+#' \item \code{nit} total number of iterations.}
+#' @param parallel \code{logical} Whether the model should be run in parallel
+#' 
+#' @import dplyr assertthat
+#' @importFrom parallel detectCores parLapply makeCluster stopCluster
+#' 
+#' @return a list including:
+#' * model: the fit of the best model
+#' * the wAIC table of the model
+#' 
+#' @export
+Gro_analysis <- function(data_weight, 
+                         all_mods =c("vonbertalanffy"),
+                         random = list(),
+                         run = list(nit = 100, nburnin = 10, nthin = 1, nch = 1),
+                         parallel= FALSE
+) {
+  assert_that(is.logical(parallel))
+  assert_that(all(all_mods %in% c("logistic", "gompertz", "richards", "vonbertalanffy", "fabens", "tpgm", "power", "richard")), msg = "The growth models supported are: logistic, gompertz, tpgm, power, richards, vonbertalanffy, and fabens")
+  assert_that(is.data.frame(data_weight))
+  assert_that(data_weight %has_name% c("MeasurementValue","Age", 'AnimalAnonID'))
+  assert_that(all(data_weight$Age >= 0 ))
+  assert_that(all(data_weight$MeasurementValue > 0 ))
+  if(length(random)>1){
+    assert_that(is.list(random))
+    assert_that(all(names(random) %in% all_mods))
+  }
+  
+  
+  data_weight<-data_weight%>%
+    mutate(logx = log(Age + 1),
+           logz = log(MeasurementValue + 1),
+           IND = as.numeric(factor(AnimalAnonID, labels = c(1:length(unique(AnimalAnonID))))))
+  
+  #Fitting the different growth models
+  all_fits_tab=c()
+  all_fits <- list()
+  
+  models = rep(names(random),as.vector(sapply(random, length)))
+  miss = setdiff(all_mods,names(random))
+  models = c(models, miss)
+  randoms = c(unlist(random), rep('',length(miss)))
+  #Fit models
+    ### parallelize?
+  if (parallel){
+    n_cores <- detectCores()
+    clust <- makeCluster(n_cores)
+  }
+  if(parallel) {
+    all_fits <- parLapply(clust, 1:length(models),
+                          Gro_run,
+                          all_mods = models,
+                          random = randoms,
+                          dat = data_weight,
+                          run = run
+    )
+    
+  }  else {
+    writeLines("\t* parallel has been set to FALSE, please wait more !")
+    all_fits <- pbapply::pblapply(1:length(models),
+                                  Gro_run,
+                                  all_mods = models,
+                                  random = randoms,
+                                  dat = data_weight,
+                                  run = run
+    )
+  }
+  
+  all_fits_tab=c()
+  for (i in 1:length(all_fits)){
+    all_fits_tab <- rbind(all_fits_tab,all_fits[[i]]$tab)
+  }
+  all_fits_tab <- all_fits_tab%>% arrange(WAIC)
+  best_std <- all_fits[[as.numeric(all_fits_tab[1, "index"]) ]]$model
+  if(parallel) {
+    stopCluster(clust)
+  }
+  
+  
+  all_fits_tab <- all_fits_tab%>% 
+    dplyr::select(-index)
+  
+  return(list(model = best_std,
+              wAIC_tab =all_fits_tab)
+  )
+}
+```
+
+```{r example-Gro_analysis}
+Age <- sample(c(0:10), 1000, replace = TRUE)
+MeasurementValue <- exp(0.2+15 * (1 - exp(-(0.1) * log(Age+1)))+ rnorm(1000,0,0.01))-1 
+AnimalAnonID <- sample(c(0:20), 100, replace = TRUE)
+dat = data.frame(Age = Age, MeasurementValue = MeasurementValue, 
+                 AnimalAnonID = AnimalAnonID, MeasurementType = "Live Weight")
+
+#Test 4 models: vonbertalanffy including an individual random effect on z0
+#               vonbertalanffy including individual random effects on z0 and zinf
+#               fabens including an individual random effect on gamma 
+#               fabens including no individual random effect
+a = Gro_analysis(dat, all_mods  = c("vonbertalanffy", "fabens"),
+                 random = list(vonbertalanffy = c("z0", "z0, zinf"), fabens = c("gamma", "")),
+                 run = list(nit = 1000, nburnin = 100, nthin = 1, nch = 1))
+```
+
+```{r tests-Gro_analysis}
+Age <- sample(c(0:10), 1000, replace = TRUE)
+MeasurementValue <- exp(0.2+15 * (1 - exp(-(0.1) * log(Age+1)))+ rnorm(1000,0,0.01))-1 
+AnimalAnonID <- sample(c(0:20), 100, replace = TRUE)
+dat = data.frame(Age = Age, MeasurementValue = MeasurementValue, 
+                 AnimalAnonID = AnimalAnonID, MeasurementType = "Live Weight")
+
+test_that(
+  "Gro_analysis works",
+  { 
+    out = Gro_analysis(dat, all_mods  = c("vonbertalanffy"),
+                       random = list(vonbertalanffy = c("z0", "z0, zinf")),
+                       run = list(nit = 100, nburnin = 10, nthin = 1, nch = 1))
+    
+    expect_named(out,c( "model", "wAIC_tab"))
+    expect_named(out$wAIC_tab,c("model_type", "random","Nparam","WAIC","lppd" ))
+  })
+```
+
+
+# Growth Model Setting
+
+This function gets the parameter and equations for the growth model and takes as arguments:
+
+* `data`, a data frame including at least the numeric columns *logx*, *logz* and *IND*
+* `random`  name of the parameters that must include an individual random effect
+* `mod` Name of the model to fit. The following models are supported : logistic, gompertz, tpgm, power, richards, vonbertalanffy, and fabens
+
+
+```{r function-Gro_ModSettings}
+
+#' Growth model settings
+#' 
+#' This function gets the parameter and equations for the growth model
+#' 
+#' @param data \code{data.frame} including at least the numeric columns *logx* and *logz* 
+#' @param random \code{vector of character} name of the parameters that must include an individual random effect
+#' @param mod \code{character} Name of the model to fit. The following models are supported : logistic, gompertz, tpgm, power, richards, vonbertalanffy, and fabens
+#' 
+#' 
+#' @import dplyr assertthat
+#' @importFrom nimble nimbleFunction 
+#'
+#' @return a list including the function of the growth model,  the number of parameter, their names, their initial values and their lowest possible values
+#' 
+#' @export
+# Set growth model parameters:
+Gro_ModSettings <- function(data, random =NULL, mod = "vonbertalanffy") {
+  
+  assert_that(mod %in% c("logistic", "gompertz", "richards", "vonbertalanffy", "fabens", "tpgm", "power", "richard"), msg = "The growth models supported are: logistic, gompertz, tpgm, power, richards, vonbertalanffy, and fabens")
+  assert_that(is.data.frame(data))
+  assert_that(data %has_name% c('logx', 'logz', 'IND'))
+  assert_that(is.numeric(data$logx))
+  assert_that(is.numeric(data$logz))
+  if(length(random)>0) {
+    assert_that(is.character(random))
+  }
+  if(mod == "vonbertalanffy"){
+    model_nim <- "
+   for (j in 1:N){{
+       logz[j] ~dnorm(z0[IND[j]] + zinf[IND[j]] * (1 - exp(- gamma[IND[j]] * logx[j])), sigma_res)}}"
+    model <- function(logx,coef){
+      coef$mu_z0 + coef$mu_zinf * (1 - exp(- coef$mu_gamma * logx))
+    }
+    inits <-  list(mu_z0= min(exp(data$logz)),
+                 mu_zinf = max(data$logz),
+                 mu_gamma = 0.1, sigma_res  = 1
+                 
+                 
+                 
+  )
+  maxval = list(z0 =  5, zinf = max(exp(data$logz))*10, gamma = 2)
+  minval = list(z0 = 0, zinf = 0, gamma = 0)
+  param = c("mu_z0","mu_zinf", "mu_gamma",
+            "sigma_res",
+            "z0", "zinf", "gamma")
+  }
+  
+  if(mod == "fabens"){
+    model_nim <- "
+   for (j in 1:N){{
+       logz[j] ~dnorm(z0[IND[j]] + (zinf[IND[j]] - z0[IND[j]]) * (1 - exp(- gamma[IND[j]] * logx[j])), sigma_res)}}"
+    model <- function(logx,coef){
+      coef$mu_z0 + (coef$mu_zinf-coef$mu_z0) * (1 - exp(- coef$mu_gamma * logx))
+    }
+    
+    inits <-  list(mu_z0= min(exp(data$logz)),
+                 mu_zinf = max(data$logz),
+                 mu_gamma = 0.1, sigma_res  = 1
+                 
+                 
+                 
+  )
+  maxval = list(z0 =  5, zinf = max(exp(data$logz))*10, gamma = 2)
+  minval = list(z0 = 0, zinf = 0, gamma = 0)
+  param = c("mu_z0","mu_zinf", "mu_gamma",
+            "sigma_res",
+            "z0", "zinf", "gamma")
+  }
+  
+if(mod == "gompertz"){
+    model_nim <- "
+   for (j in 1:N){{
+       logz[j] ~dnorm( zinf[IND[j]] * exp(-alpha[IND[j]]*exp(- gamma[IND[j]] * logx[j])), sigma_res)}}"
+    model <- function(logx,coef){
+         coef$mu_zinf * exp(-coef$mu_alpha*exp(-mu_gamma * logx))
+    }
+    inits <-  list(mu_alpha= 0,
+                 mu_zinf = max(data$logz),
+                 mu_gamma = 0.1, sigma_res  = 1
+                 
+                 
+                 
+  )
+  maxval = list(alpha =  5, zinf = max(exp(data$logz))*10, gamma = 2)
+  minval = list(alpha = 0, zinf = 0, gamma = 0)
+  param = c("mu_alpha","mu_zinf", "mu_gamma",
+            "sigma_res",
+            "alpha", "zinf", "gamma")
+}
+  
+  
+   if(mod == "logistic"){
+    model_nim <- "
+   for (j in 1:N){{
+       logz[j] ~dnorm(zinf[IND[j]] / (1 + exp(- gamma[IND[j]] * (logx[j] - xinfl[IND[j]]))), sigma_res)}}"
+    model <- function(logx,coef){
+           coef$mu_zinf / (1 + exp(- coef$mu_gamma * (logx - coef$mu_xinfl)))
+    }
+     inits <-  list(mu_xinfl= mean(exp(data$logx)),
+                 mu_zinf = max(data$logz),
+                 mu_gamma = 0.1, sigma_res  = 1
+                 
+                 
+                 
+  )
+  maxval = list(xinfl =  max(exp(data$logx)), zinf = max(exp(data$logz))*10, gamma = 2)
+  minval = list(xinfl = min(exp(data$logx)), zinf = 0, gamma = 0)
+  param = c("mu_xinfl","mu_zinf", "mu_gamma",
+            "sigma_res",
+            "xinfl", "zinf", "gamma")
+ }
+     if(mod == "tpgm"){
+    model_nim <- "
+   for (j in 1:N){{
+       logz[j] ~dnorm(z0[IND[j]] + zinf[IND[j]] * (1 - exp(- gamma[IND[j]] * logx[j])), sigma_res)}}"
+    model <- function(logx,coef){
+        coef$mu_z0 + coef$mu_zinf * (1 - exp(- coef$mu_gamma * logx))
+    }
+         inits <-  list(mu_z0= min(exp(data$logz)),
+                 mu_zinf = max(data$logz),
+                 mu_gamma = 0.1, sigma_res  = 1
+                 
+                 
+                 
+  )
+  maxval = list(z0 =  5, zinf = max(exp(data$logz))*10, gamma = 2)
+  minval = list(z0 = 0, zinf = 0, gamma = 0)
+  param = c("mu_z0","mu_zinf", "mu_gamma",
+            "sigma_res",
+            "z0", "zinf", "gamma")
+}
+  
+     if(mod == "power"){
+    model_nim <- "
+   for (j in 1:N){{
+       logz[j] ~dnorm(alpha0[IND[j]] + alpha1[IND[j]] * (logx[j]^(beta[IND[j]])), sigma_res)}}"
+    model <- function(logx,coef){
+   
+      coef$mu_alpha0 + coef$mu_alpha1 * (logx)^(coef$mu_beta)
+    }
+      inits <-  list(mu_alpha0= 0,
+                 mu_alpha1 = 1,
+                 mu_beta = 1, sigma_res  = 1
+                 
+                 
+                 
+  )
+  maxval = list(alpha0 =  -10, alpha1 = -10, beta = 0)
+  minval = list(alpha0 = 10, alpha1 = 10, beta = 5)
+  param = c("mu_alpha0","mu_alpha1", "mu_gamma",
+            "sigma_res",
+            "alpha0", "alpha1", "gamma")
+   }
+     if(mod == "richards"){
+    model_nim <- "
+   for (j in 1:N){{
+       logz[j] ~dnorm(zinf[IND[j]] * (1 - beta[IND[j]] *exp(- gamma[IND[j]] * logx[j]))^(1 / (1 - m[IND[j]])), sigma_res)}}"
+    model <- function(logx,coef){
+  
+       coef$mu_zinf * (1 - coef$mu_beta* exp(- coef$mu_gamma * logx))^(1 / (1 - m))
+    }
+     inits <-  list(mu_beta= 1,mu_m = 1,
+                 mu_zinf = max(data$logz),
+                 mu_gamma = 0.1, sigma_res  = 1
+                 
+                 
+                 
+  )
+  maxval = list(beta =  15, zinf = max(exp(data$logz))*10, gamma = 2, m = 1000)
+  minval = list(beta = 0, zinf = 0, gamma = 0, m = 0)
+  param = c("mu_beta","mu_zinf", "mu_gamma","mu_m",
+            "sigma_res",
+            "beta", "zinf", "gamma", "m")
+ }
+
+  if(length(random)>0){
+    for( p in random){
+      param = c(param, glue("sigma_{p}")) 
+      a =list(1)
+      names(a) = glue("sigma_{p}")
+      inits = append(inits, a)
+    }
+  }
+  
+  const <- list(N = nrow(data),
+                Nind = length(unique(data$IND)),
+                IND = data$IND
+  )
+  
+  
+  
+  dat_nim <- list(logz = data$logz,
+                  logx = data$logx
+  )
+  
+  ARG = list(model_nim  =model_nim,
+             model_fun  =model,
+             const_nim = const,
+             data_nim = dat_nim,
+             inits_nim = inits,
+             parameters = param,
+             maxval = maxval,
+             minval = minval
+  )
+  return(ARG)
+  
+}
+```
+
+```{r example-Gro_ModSettings}
+logx <- rnorm(100, 0, 1)
+logz <- 0.2+ 15 * (1 - exp(-(1) * logx)) +rnorm(100, 0, 0.01)
+dat = data.frame(logx = logx, logz = logz,IND =sample(c(0:20), 100, replace = TRUE)
+)
+model <- Gro_ModSettings(data = dat, mod = "vonbertalanffy")
+```
+
+
+```{r tests-Gro_ModSettings}
+logx <- rnorm(100, 0, 1)
+logz <- 0.2+ 15 * (1 - exp(-(1) * logx)) +rnorm(100, 0, 0.01)
+dat = data.frame(logx = logx, logz = logz,IND =sample(c(0:20), 100, replace = TRUE)
+)
+
+test_that(
+  "Gro_ModSettings error",
+  {
+    expect_error(
+      dat %>% Gro_ModSettings(mod = "vonBert"),
+      regexp = "The growth models supported are: logistic, gompertz, tpgm, power, richards, vonbertalanffy, and fabens")
+    expect_error(
+      dat$logz %>% Gro_ModSettings(),
+      regexp = "data is not a data frame")
+  })
+
+
+
+test_that(
+  "Gro_ModSettings works",
+  {     
+    a=dat %>% Gro_ModSettings(mod = "vonbertalanffy")
+  expect_named(a,
+               c("model_nim","model_fun",  "const_nim",  "data_nim",   "inits_nim",  "parameters", "maxval", 'minval'))
+  expect_named(a$inits_nim, c('mu_z0', 'mu_zinf', 'mu_gamma', 'sigma_res'))
+  expect_named(a$data_nim, c("logz", "logx"))
+  expect_named(a$const_nim, c("N", "Nind", "IND"))
+  }
+)
+```
+
+
+# Plot model prediction
+
+This function gives the predicted values of the model and plots to check the convergence of the model. It takes as arguments:
+
+* `data` including at least the numeric columns *Age*, *MeasurementValue* and *AnimalAnonID* 
+* `out` result output named `model` from Gro_run() or from Gro$analysis()
+
+It returns the following object:
+
+*`summary`shomwing mean, standard deviation, credible interval at 95% and the Gelman-Rubin statistics Rhat of each parameter.
+* `predictions` giving the mean estimates and credible interval at 95% of each age
+ `GOF`: 4 tests of goodness of fit: "normal": test if residuals are normally distributes ; "X"; test if there is a trend between residual and Age, "var": Test if there is the trend in the variance of the residuals over Age ,"conv": check if all Rhat < 1.1
+* `plot_pred` Plot of the predicted values, credible interval at 95% in grey and data points.
+* `convergence`: Plots of the Bayesian chains 
+* `posterior`: Plots of the posterior distribution for each parameter
+
+```{r function-Gro_pred}
+
+#' Predictions and plots
+#' 
+#' Give predicted values of the model and plots to check the convergence of the model
+#' 
+#' @param data \code{data.frame} including at least the numeric columns *Age*, *MeasurementValue* and *AnimalAnonID* 
+#' @param out result output from Gro_run()
+#' @param Cred_int \code{numeric} lower and upper bound of the credible interval to plot and to predict
+#' @param title \code{character} Title of the plot
+#' 
+#' @import dplyr assertthat 
+#' @importFrom ggplot2 ggplot  geom_line ggtitle geom_ribbon aes geom_point
+#' @importFrom stringr str_which
+#' @importFrom stats lm shapiro.test
+#'
+#' @return a list including \itemize{
+#' \item `summary`shomwing mean, standard deviation, credible interval at 95% and the Gelman-Rubin statistics Rhat of each parameter.
+#' \item `predictions` giving the mean estimates and credible interval at 95% of each age
+#' \item `GOF`: 4 tests of googness of fit: "normal": test if residuals are normally distributes ; "X"; test if there is a trend between residual and Age, "var": Test if there is the trend in the variance of the residuals over Age ,"conv": check if all Rhat < 1.1
+#' \item `plot_pred` Plot of the predicted values, credible interval at 95% in grey and data points.
+#' \item `convergence`: Plots of the Bayesian chains 
+#' \item `posterior`: Plots of the posterior distribution for each parameter
+#' }
+#' 
+#' @export
+Gro_pred <- function(data, out, Cred_int = c(0.025,0.975), title = "") {
+  assert_that(is.data.frame(data))
+  assert_that(data %has_name% c("MeasurementValue","Age", 'AnimalAnonID'))
+  assert_that(is.numeric(data$MeasurementValue))
+  assert_that(is.numeric(data$Age))
+  assert_that(is.numeric(Cred_int))
+  assert_that(length(Cred_int) == 2)
+  assert_that(all(Cred_int<=1))
+  assert_that(all(Cred_int>=0))
+  assert_that("coef" %in% names(out), msg = "out must be created using function Gro_run or Gro_analysis")
+  assert_that("model_fun" %in% names(out), msg = "out must be created using function Gro_run or Gro_analysis")
+  
+  
+  toplot = c(str_which(names(out$coef), "mu"),
+             str_which(names(out$coef), "sigma"))
+  beta_tt <- out$coef[,toplot]
+  
+  
+  resrb <- sum_nim(as.matrix( beta_tt), out$run$nch)
+  
+  
+  #Plot histograms of beta
+  mpl=mconv=list()
+  
+  for (i in 1:ncol(beta_tt)){
+    mpl[[i]] <- hist_post( beta_tt[, i] )
+    mconv[[i]] <- conv_plot( beta_tt[, i],  (out$run$nit-out$run$nburnin)/out$run$nthin)
+    
+  }
+  post_pl<- cowplot::plot_grid(plotlist = mpl, 
+                               align = "hv", 
+                               nrow = ceiling(sqrt(ncol(beta_tt))),
+                               ncol = round(sqrt(ncol(beta_tt))),
+                               labels = colnames(beta_tt),
+                               label_x = 0, label_y = 0, label_size = 12,
+                               hjust = -0.5, vjust = -0.5
+  )
+  conv_pl<- cowplot::plot_grid(plotlist = mconv, 
+                               align = "v", 
+                               nrow = ncol(beta_tt),
+                               labels = colnames(beta_tt),
+                               label_x = 0, label_y = 0, label_size = 12,
+                               hjust = -0.5, vjust = -0.5
+  )
+  
+  
+  # Predictions
+  #Vector for predictions
+  zQuant <- tibble(Age = seq(min(data$Age), max(data$Age)+0.1, 0.1),
+                   mean = numeric(1),
+                   Conf_Int_low = numeric(1),
+                   Conf_Int_up = numeric(1)
+  )
+  
+  #Fitted values and residuals
+  for (j in 1:nrow(zQuant)){
+    pred = out$model_fun(log(zQuant$Age[j]+1),out$coef)
+    zQuant$mean[j] = mean(exp(pred)-1)
+    zQuant$Conf_Int_low[j] = quantile(exp(pred)-1, Cred_int[1])
+    zQuant$Conf_Int_up[j] =  quantile(exp(pred)-1, Cred_int[2])
+  }
+  
+  data_pred = data%>%
+    mutate(Age= round(Age,0.1))%>%
+    group_by(Age)%>%
+    summarize(MeasurementValue = mean(MeasurementValue))%>%
+    left_join(zQuant%>%select(Age, mean), by = "Age")%>%
+    mutate(logx = log(Age+1))
+  
+  #GOF
+  GOF = list(normal = T, X = T, var = T, conv = all(resrb$Rhat<1.1))
+  elogz <- log(data_pred$MeasurementValue+1) - log(data_pred$mean+1)
+  elogz2 <- elogz^2
+  test  = shapiro.test(elogz)
+  if(test$p.value<0.01){GOF$normal = FALSE}
+  a = summary(lm(elogz2 ~ data_pred$logx)) #test variance?
+  if(a$coefficients[2,4]<0.01){GOF$X = FALSE}
+  b = summary(lm(elogz ~ data_pred$logx)) #test pour senescence??
+  if(b$coefficients[2,4]<0.01){GOF$var = FALSE}
+  
+  
+  
+  p <- ggplot(data, aes(x = Age))+
+    ggtitle(title)+
+    geom_point(aes(y = MeasurementValue))+
+    geom_ribbon(data = zQuant,aes ( ymin = Conf_Int_low, ymax = Conf_Int_up),
+                fill = "grey80", alpha = 0.25)+
+    geom_line(data = zQuant,aes ( y = mean ))
+  
+  
+  
+  return(list(summary =  resrb, 
+              predictions=zQuant,
+              plot_pred = p, 
+              posterior =post_pl, 
+              convergence = conv_pl, 
+              GOF = GOF ))
+}
+```
+
+```{r example-Gro_pred}
+Age <- sample(c(0:10), 100, replace = TRUE)
+AnimalAnonID <- sample(c(0:20), 100, replace = TRUE)
+MeasurementValue <- exp(0.2+15 * (1 - exp(-(0.1) * log(Age+1)))+ 
+                          rnorm(100,0,0.01) + AnimalAnonID*0.1)-1 
+dat = data.frame(Age = Age, MeasurementValue = MeasurementValue, 
+                 AnimalAnonID = AnimalAnonID, MeasurementType = "Live Weight")
+
+out = Gro_analysis(dat, 
+                   all_mods = c("vonbertalanffy"),
+                   run = list(nit = 1000, nburnin = 100, nthin = 1, nch = 3))
+
+p <- Gro_pred(data = dat, 
+              out = out$model, 
+              title =out$wAIC_tab$model[1])
+p$summary
+p$predictions
+p$GOF
+p$plot_pred
+p$convergence
+p$posterior
+```
+
+
+```{r tests-Gro_pred}
+Age <- sample(c(0:10), 1000, replace = TRUE)
+MeasurementValue <- exp(0.2+15 * (1 - exp(-(0.1) * log(Age+1)))+ rnorm(1000,0,0.01))-1 
+AnimalAnonID <- sample(c(0:20), 100, replace = TRUE)
+dat = data.frame(Age = Age, MeasurementValue = MeasurementValue, 
+                 AnimalAnonID = AnimalAnonID, MeasurementType = "Live Weight")
+out = dat %>% Gro_analysis()
+
+
+test_that(
+  "Gro_pred",
+  { 
+    p<- dat %>% Gro_pred(out$model)
+    expect_named(p,c("summary", "predictions", "plot_pred", "posterior", "convergence", "GOF"))
+    expect_length(p$plot_pred$layers,3)
+   expect_named(p$summary,c("mean", "sd", "QI 2.5", "QI 97.5", "Rhat"))
+   expect_named(p$predictions,c("Age", "mean" , "Conf_Int_low", "Conf_Int_up" ))
+   expect_named(p$GOF,c("normal", "X", "var" ,"conv"))
+   expect_true("ggplot" %in% class(p$posterior))
+expect_true("ggplot" %in% class(p$convergence))
 })
 ```
+
+
+
 
 
 ```{r development-inflate, eval=FALSE}
 # Run but keep eval=FALSE to avoid infinite loop
 # Execute in the console directly
-fusen::inflate(flat_file = "dev/flat_main.Rmd", vignette_name = "Minimal")
+fusen::inflate(flat_file = "dev/flat_main.Rmd", vignette_name = "run growth models")
 ```

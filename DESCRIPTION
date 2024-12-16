@@ -1,18 +1,35 @@
 Package: Growth
-Version: 0.0.0.9000
 Title: Bayesian Growth Analysis
-Description: Use bayesian approach to builg growth model with random effect.
-Authors@R: c(person(given = "Floriane",
-         family = "Plard",
-         role = c("aut", "cre", "ctr"),
-         email = "floriane.c.plard@gmail.com"),
-  person(given = "Species",
-         family = "360",
-         role = "cph",
-         email = "Support@Species360.org"))
+Version: 0.0.0.9000
+Authors@R: c(
+    person("Floriane", "Plard", , "floriane.c.plard@gmail.com", role = c("aut", "cre", "ctr")),
+    person("Species", "360", , "Support@Species360.org", role = "cph")
+  )
+Description: Use bayesian approach to builg growth model with random
+    effect.
 License: MIT + file LICENSE
+Imports: 
+    assertthat,
+    cowplot,
+    dplyr,
+    ggplot2,
+    ggpp,
+    glue,
+    graphics,
+    magrittr,
+    nimble,
+    parallel,
+    pbapply,
+    stats,
+    stringi,
+    stringr
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: 
+    knitr
+Config/fusen/version: 0.5.2
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
-Imports: 
-    magrittr

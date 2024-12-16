@@ -6,3 +6,7 @@
 ^CODE_OF_CONDUCT\.md$
 ^\.github$
 ^codecov\.yml$
+^Growth\.Rproj$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

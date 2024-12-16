@@ -1,0 +1,41 @@
+flat_main.Rmd:
+  path: dev/flat_main.Rmd
+  state: active
+  R:
+  - R/gro_analysis.R
+  - R/gro_modsettings.R
+  - R/gro_pred.R
+  - R/gro_run.R
+  tests:
+  - tests/testthat/test-gro_run.R
+  - tests/testthat/test-gro_analysis.R
+  - tests/testthat/test-gro_modsettings.R
+  - tests/testthat/test-gro_pred.R
+  vignettes: vignettes/run-growth-models.Rmd
+  inflate:
+    flat_file: dev/flat_main.Rmd
+    vignette_name: Run growth models
+    open_vignette: true
+    check: true
+    document: true
+    overwrite: ask
+flat_nimble.Rmd:
+  path: dev/flat_nimble.Rmd
+  state: active
+  R:
+  - R/gro_writenimblecode.R
+  - R/hist_post.R
+  - R/rhatfun.R
+  - R/runnimble.R
+  tests:
+  - tests/testthat/test-rhatfun.R
+  - tests/testthat/test-hist_post.R
+  - tests/testthat/test-gro_writenimblecode.R
+  vignettes: vignettes/useful-functions.Rmd
+  inflate:
+    flat_file: dev/flat_nimble.Rmd
+    vignette_name: Useful Functions
+    open_vignette: true
+    check: false
+    document: true
+    overwrite: 'yes'
