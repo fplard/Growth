@@ -26,6 +26,11 @@ Growth can be used to run growth models including individual random efffects on 
 
 ## Installation
 
+#### Install `nimble`
+
+If you never used the package `nimble`, you first need to install it following recommendations [here](https://r-nimble.org/download)
+
+
 
 You can install the development version of Growth from [GitHub](https://github.com/) with:
 
@@ -36,9 +41,7 @@ devtools::install_github("fplard/Growth")
 
 ## Documentation
 
-Full documentation website on: https://fplard.github.io/Growth
-
-You can also open the documentation locally on your machine using
+You can open the documentation locally on your machine using
 ``` r
 path <- system.file("docs", "index.html", package = "Growth")
 browseURL(path)
