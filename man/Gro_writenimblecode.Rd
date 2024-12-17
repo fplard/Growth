@@ -33,12 +33,8 @@ Write the nimble code needed to run growth model including random effects
 #Example for a von bertalanffy model
 Gro_writenimblecode(params = c('z0', 'zinf', 'gamma'), 
                     model = "for (j in 1:N){{
-<<<<<<< HEAD
        logz[j] ~dnorm(z0[IND[j]] + zinf[IND[j]] * 
        (1 - exp(- gamma[IND[j]] * logx[j])), sigma_res)}}",
-=======
-       logz[j] ~dnorm(z0[IND[j]] + zinf[IND[j]] * (1 - exp(- gamma[IND[j]] * logx[j])), sigma_res)}}",
->>>>>>> 477a9e1177176026d2b387122272aa26e641282b
                     random = "gamma",
                     maxval = list(z0 = 5), 
                     minval= list(z0 = 0, zinf = 0, gamma = 0)

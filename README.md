@@ -90,10 +90,16 @@ ISRverse and load the needed libraries
 ### Load Data
 
 ``` r
+library(ISRverse)
+library(glue)
+library(tidyverse)
+
+# Path to the ZIMSdata directory:
+ZIMSdirdata <- "C:/Users/flopy/Documents/ISR/TaxonProfiles/Data"
+
 extractDate ="2024-08-29"
 
-taxa = "Mammalia"
-List_species = list(Mammalia = c("Panthera leo", "Panthera onca","Panthera uncia", "Panthera tigris", "Panthera pardus"))
+taxa = "Chondrichthyes"
 
 #Filters
 # Earliest date to include records
@@ -110,14 +116,15 @@ uncert_birth = 365
 
 #Load all data for this taxa
 Data <- Load_Zimsdata(taxa = taxa, ZIMSdir = ZIMSdirdata, 
-                      species = List_species,
+                      species = list(Chondrichthyes = "All"),
                       Animal = TRUE,
                       tables= c('Collection', "Weight", 'Parent', 'Move')) 
 Animal <- Prep_Animal(Data[[taxa]]$Animal, extractDate = extractDate, minBirthDate =minBirthDate)
 
 
 #Choose Species
-species = List_species[[taxa]][1]
+List_species = unique(Data$Chondrichthyes$Animal$binSpecies)
+species ="Rhinoptera bonasus"
 
 Dataspe <- select_species(species, Animal, Data[[taxa]]$Collection, uncert_birth = uncert_birth,
                           Birth_Type = Birth_Type,uncert_death= 3600,
@@ -182,15 +189,13 @@ if(nrow(Dataspe$data)>0){
                          perc_weight_min=0.2, perc_weight_max=2.5,
                          IQR=2.75, minq=0.025, Ninterval_juv = 10)
       
-      #plot outliers: Look at ?Gro_outplot to understand the different colors
-      if(!is.null(PlotDir)){
+    
         p1 <-Gro_outplot(data_weight, title = glue("{species} {sx}"), ylimit = NULL, xlimit = NULL)
-        ggsave(p1, filename = glue("{PlotDir}/{species}_{sx}_outliers.png"), height = 6, width = 6)
       }
       
     }
   }
-}      
+
 p1
 
 #Remove outliers
@@ -206,9 +211,8 @@ library(Growth)
 uncert_date = 365
 
 #Models: "logistic", "gompertz", "chapmanRichards", "vonBertalanffy", "gam", and/or "polynomial"
-models_gro <- c("vonBertalanffy", "gompertz") 
-all_mods  = c("vonbertalanffy", "fabens"),
-random = list(vonbertalanffy = c("z0", "z0, zinf"), fabens = c("gamma", "")),
+models_gro  = c("vonbertalanffy", "fabens")
+random = list(vonbertalanffy = c("z0", "z0, zinf"), fabens = c("gamma", ""))
 run = list(nit = 1000, nburnin = 100, nthin = 1, nch = 1)
 # Conditions to run the growth analysis
 minNgro = 100 #Minimum number of weights
@@ -216,10 +220,10 @@ minNIgro = 50 #Minimum number of individuals
 
 
 if (nrow(data_weight) >= minNgro) {
-  if (length(unique(data_weight$AnimalAnonID) >= minNIgro) {
+  if (length(unique(data_weight$AnimalAnonID)) >= minNIgro) {
     #run analysis
     out<- Growth::Gro_analysis(dat = data_weight , 
-                       all_mods = models, random =random 
+                       all_mods = models_gro, random =random,
                        run = run)
     
     #Look at best model predictions and convergence
