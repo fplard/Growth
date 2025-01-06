@@ -5,8 +5,8 @@
 #' Build and run the bayesian growth model `x` of `all_mods`.
 #' 
 #' @param x \code{numeric} index of the formula used to build the model
-#' @param all_mods \code{vector of characters} of model names. The following models are supported: logistic, gompertz, tpgm, power, richards, vonbertalanffy, and fabens.
-#' @param dat \code{data.frame}including at least the numeric columns *logx*, *logz* and *IND*
+#' @param all_mods \code{vector of characters} of model names. The following models are supported: logistic, gompertz, tpgm, power, richards, vonbertalanffy.
+#' @param dat \code{data.frame}including at least the numeric columns *age*, *z* and *IND*
 #' @param random {vector of character} of the same length as \code{all_mods} giving the parameters that should be included an individual random effect
 #' @param run \code{list} Bayesian parameters. They should be increased to reach convergence \itemize{
 #' \item \code{nch} number of chains.
@@ -25,14 +25,14 @@
 #' 
 #' @export
 #' @examples
-#' logx <- rnorm(10000, 0, 1)
+#' age <- rnorm(10000, 0, 1)
 #' id1 =  rnorm(21,0, 0.5)
 #' id2 =  rnorm(21,0, 0.4)
 #' id3 =  rnorm(21,0, 0.3)
 #' IND =sample(c(1:20), 100, replace = TRUE)
-#' logz <- 0.2+ id1[IND]+ (15 + id2[IND])* (1 - exp(-(1+ id3[IND]) * logx)) +
+#' z <- 0.2+ id1[IND]+ (15 + id2[IND])* (1 - exp(-(1+ id3[IND]) * age)) +
 #'   rnorm(100, 0, 0.01)
-#' dat = data.frame(logx = logx, logz = logz, 
+#' dat = data.frame(age = age, z = z, 
 #'                  IND = as.numeric(factor(IND ,labels = c(1:length(unique(IND)))))
 #' )
 #'
@@ -56,9 +56,9 @@ Gro_run<-function(x,
   assert_that(is.character(all_mods))
   assert_that(x<= length(all_mods))
   assert_that(is.data.frame(dat))
-  assert_that(dat %has_name% c('logx', 'logz', 'IND'))
-  assert_that(is.numeric(dat$logx))
-  assert_that(is.numeric(dat$logz))
+  assert_that(dat %has_name% c('age', 'z', 'IND'))
+  assert_that(is.numeric(dat$age))
+  assert_that(is.numeric(dat$z))
   assert_that(run %has_name% c("nit", "nburnin", "nthin", "nch"))
   assert_that(is.character(random))
   model_type=all_mods[x]
@@ -71,8 +71,9 @@ Gro_run<-function(x,
   
   param = stringr::str_subset(model_gro$parameters, '_', negate = T)
   if(length(random_mod)>1){
-    for(r in random_mod)
+    for(r in random_mod){
       assert_that(r %in% param, msg = glue::glue("{r} is not a parameter of the model}"))
+    }
   }
   model_nimble = Gro_writenimblecode(params = param, 
                                      model = model_gro$model_nim,

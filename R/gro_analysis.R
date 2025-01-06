@@ -6,8 +6,9 @@
 #' This function fit a series of growth models to a dataset and select the best one by wAIC.
 #' 
 #' @param data_weight \code{data.frame} including at least the numeric columns *Age*, *MeasurementValue* and *AnimalAnonID* 
-#' @param all_mods \code{vector of character} indicating the growth models that need to be fit.The following models are supported :logistic, gompertz, tpgm, power, richards, vonbertalanffy , and fabens. default = "vonBertalanffy"
+#' @param all_mods \code{vector of character} indicating the growth models that need to be fit.The following models are supported :logistic, gompertz, tpgm, power, richards, vonbertalanffy. default = "vonBertalanffy"
 #' @param random {list} of the model names giving the parameters that should include an individual random effect. See the example
+#' @param logtransform {logical} whether age and measurement values should be log transform (+1 is added to avoid having log(0))
 #' @param run \code{list} Bayesian parameters. They should be increased to reach convergence \itemize{
 #' \item \code{nch} number of chains.
 #' \item \code{nthin} interval between iterations to keep.
@@ -32,19 +33,19 @@
 #'
 #' #Test 4 models: vonbertalanffy including an individual random effect on z0
 #' #               vonbertalanffy including individual random effects on z0 and zinf
-#' #               fabens including an individual random effect on gamma 
-#' #               fabens including no individual random effect
-#' a = Gro_analysis(dat, all_mods  = c("vonbertalanffy", "fabens"),
-#'                  random = list(vonbertalanffy = c("z0", "z0, zinf"), fabens = c("gamma", "")),
+#' #               gompertz including an individual random effect on gamma 
+#' #               gompertz including no individual random effect
+#' a = Gro_analysis(dat, all_mods  = c("vonbertalanffy", "gompertz"),
+#'                  random = list(vonbertalanffy = c("z0", "z0, zinf"), gompertz = c("gamma", "")),
 #'                  run = list(nit = 1000, nburnin = 100, nthin = 1, nch = 1))
 Gro_analysis <- function(data_weight, 
                          all_mods =c("vonbertalanffy"),
-                         random = list(),
+                         random = list(),logtransform = FALSE,
                          run = list(nit = 100, nburnin = 10, nthin = 1, nch = 1),
                          parallel= FALSE
 ) {
   assert_that(is.logical(parallel))
-  assert_that(all(all_mods %in% c("logistic", "gompertz", "richards", "vonbertalanffy", "fabens", "tpgm", "power", "richard")), msg = "The growth models supported are: logistic, gompertz, tpgm, power, richards, vonbertalanffy, and fabens")
+  assert_that(all(all_mods %in% c("logistic", "gompertz", "richards", "vonbertalanffy", "tpgm", "power", "richard")), msg = "The growth models supported are: logistic, gompertz, tpgm, power, richards, vonbertalanffy")
   assert_that(is.data.frame(data_weight))
   assert_that(data_weight %has_name% c("MeasurementValue","Age", 'AnimalAnonID'))
   assert_that(all(data_weight$Age >= 0 ))
@@ -54,11 +55,18 @@ Gro_analysis <- function(data_weight,
     assert_that(all(names(random) %in% all_mods))
   }
   
-  
+  if (logtransform){
   data_weight<-data_weight%>%
-    mutate(logx = log(Age + 1),
-           logz = log(MeasurementValue + 1),
+    mutate(age = log(Age + 1),
+           z = log(MeasurementValue + 1),
            IND = as.numeric(factor(AnimalAnonID, labels = c(1:length(unique(AnimalAnonID))))))
+  }else{
+      data_weight<-data_weight%>%
+    mutate(age = Age ,
+           z = MeasurementValue ,
+           IND = as.numeric(factor(AnimalAnonID, labels = c(1:length(unique(AnimalAnonID))))))
+
+  }
   
   #Fitting the different growth models
   all_fits_tab=c()
@@ -103,7 +111,7 @@ Gro_analysis <- function(data_weight,
   if(parallel) {
     stopCluster(clust)
   }
-  
+  best_std$logtransform= logtransform
   
   all_fits_tab <- all_fits_tab%>% 
     dplyr::select(-index)

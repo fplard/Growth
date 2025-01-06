@@ -11,7 +11,7 @@ coverage](https://codecov.io/gh/fplard/Growth/branch/main/graph/badge.svg)](http
 <!-- badges: end -->
 
 Growth can be used to run growth models including individual random
-efffects on clean dataset.
+effects on clean dataset.
 
 ## Installation
 
@@ -46,8 +46,8 @@ library(Growth)
 #Create a simple data frame
 Age <- sample(c(0:10), 100, replace = TRUE)
 AnimalAnonID <- sample(c(0:20), 100, replace = TRUE)
-MeasurementValue <- exp(0.2+15 * (1 - exp(-(0.1) * log(Age+1)))+ 
-                          rnorm(100,0,0.01) + AnimalAnonID*0.1)-1 
+MeasurementValue <- 0.2+15 * (1 - exp(-(0.1) * Age))+ 
+                          rnorm(100,0,0.01) + AnimalAnonID*0.1 
 dat = data.frame(Age = Age, MeasurementValue = MeasurementValue, 
                  AnimalAnonID = AnimalAnonID, MeasurementType = "Live Weight")
 
@@ -214,8 +214,8 @@ library(Growth)
 uncert_date = 365
 
 #Models: "logistic", "gompertz", "chapmanRichards", "vonBertalanffy", "gam", and/or "polynomial"
-models_gro  = c("vonbertalanffy", "fabens")
-random = list(vonbertalanffy = c("z0", "z0, zinf"), fabens = c("gamma", ""))
+models_gro  = c("vonbertalanffy", "gompertz")
+random = list(vonbertalanffy = c("z0", "z0, zinf"), gompertz = c("gamma", ""))
 run = list(nit = 1000, nburnin = 100, nthin = 1, nch = 1)
 # Conditions to run the growth analysis
 minNgro = 100 #Minimum number of weights

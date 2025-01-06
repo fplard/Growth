@@ -7,11 +7,11 @@
 Gro_ModSettings(data, random = NULL, mod = "vonbertalanffy")
 }
 \arguments{
-\item{data}{\code{data.frame} including at least the numeric columns \emph{logx} and \emph{logz}}
+\item{data}{\code{data.frame} including at least the numeric columns \emph{age} and \emph{z}}
 
 \item{random}{\code{vector of character} name of the parameters that must include an individual random effect}
 
-\item{mod}{\code{character} Name of the model to fit. The following models are supported : logistic, gompertz, tpgm, power, richards, vonbertalanffy, and fabens}
+\item{mod}{\code{character} Name of the model to fit. The following models are supported : logistic, gompertz, tpgm, power, richards, vonbertalanffy}
 }
 \value{
 a list including the function of the growth model,  the number of parameter, their names, their initial values and their lowest possible values
@@ -20,9 +20,9 @@ a list including the function of the growth model,  the number of parameter, the
 This function gets the parameter and equations for the growth model
 }
 \examples{
-logx <- rnorm(100, 0, 1)
-logz <- 0.2+ 15 * (1 - exp(-(1) * logx)) +rnorm(100, 0, 0.01)
-dat = data.frame(logx = logx, logz = logz,IND =sample(c(0:20), 100, replace = TRUE)
+age <- rnorm(100, 0, 1)
+z <- 0.2+ 15 * (1 - exp(-(1) * age)) +rnorm(100, 0, 0.01)
+dat = data.frame(age = age, z = z,IND =sample(c(0:20), 100, replace = TRUE)
 )
 model <- Gro_ModSettings(data = dat, mod = "vonbertalanffy")
 }

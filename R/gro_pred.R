@@ -46,7 +46,7 @@
 #' p$plot_pred
 #' p$convergence
 #' p$posterior
-Gro_pred <- function(data, out, Cred_int = c(0.025,0.975), title = "") {
+Gro_pred <- function(data, out, Cred_int = c(0.025,0.975),title = "") {
   assert_that(is.data.frame(data))
   assert_that(data %has_name% c("MeasurementValue","Age", 'AnimalAnonID'))
   assert_that(is.numeric(data$MeasurementValue))
@@ -92,6 +92,8 @@ Gro_pred <- function(data, out, Cred_int = c(0.025,0.975), title = "") {
   )
   
   
+
+  
   # Predictions
   #Vector for predictions
   zQuant <- tibble(Age = seq(min(data$Age), max(data$Age)+0.1, 0.1),
@@ -102,28 +104,42 @@ Gro_pred <- function(data, out, Cred_int = c(0.025,0.975), title = "") {
   
   #Fitted values and residuals
   for (j in 1:nrow(zQuant)){
+      if(out$logtransform){
+
     pred = out$model_fun(log(zQuant$Age[j]+1),out$coef)
     zQuant$mean[j] = mean(exp(pred)-1)
     zQuant$Conf_Int_low[j] = quantile(exp(pred)-1, Cred_int[1])
     zQuant$Conf_Int_up[j] =  quantile(exp(pred)-1, Cred_int[2])
+      }else{
+           pred = out$model_fun(zQuant$Age[j],out$coef)
+    zQuant$mean[j] = mean(pred)
+    zQuant$Conf_Int_low[j] = quantile(pred, Cred_int[1])
+    zQuant$Conf_Int_up[j] =  quantile(pred, Cred_int[2])
+
+      }
   }
   
   data_pred = data%>%
     mutate(Age= round(Age,0.1))%>%
     group_by(Age)%>%
     summarize(MeasurementValue = mean(MeasurementValue))%>%
-    left_join(zQuant%>%select(Age, mean), by = "Age")%>%
-    mutate(logx = log(Age+1))
+    left_join(zQuant%>%select(Age, mean), by = "Age")
   
+   if(out$logtransform){
+      data = data%>%
+        mutate(Age = log(Age+1),
+               mean = log(mean +1),
+                MeasurementValue = log(MeasurementValue+1))
+  }
   #GOF
   GOF = list(normal = T, X = T, var = T, conv = all(resrb$Rhat<1.1))
-  elogz <- log(data_pred$MeasurementValue+1) - log(data_pred$mean+1)
-  elogz2 <- elogz^2
-  test  = shapiro.test(elogz)
+  ez <- data_pred$MeasurementValue - data_pred$mean
+  ez2 <- ez^2
+  test  = shapiro.test(ez)
   if(test$p.value<0.01){GOF$normal = FALSE}
-  a = summary(lm(elogz2 ~ data_pred$logx)) #test variance?
+  a = summary(lm(ez2 ~ data_pred$Age)) #test variance?
   if(a$coefficients[2,4]<0.01){GOF$X = FALSE}
-  b = summary(lm(elogz ~ data_pred$logx)) #test pour senescence??
+  b = summary(lm(ez ~ data_pred$Age)) #test pour senescence??
   if(b$coefficients[2,4]<0.01){GOF$var = FALSE}
   
   

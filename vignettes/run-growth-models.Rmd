@@ -1,5 +1,5 @@
 ---
-title: "Run growth models"
+title: "run growth models"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{run-growth-models}
@@ -38,7 +38,7 @@ The function `Gro_run()` allows to run one growth model. This function takes as 
 
 * `x` the index of the formula to use 
 * `dat` including at least the numeric columns *Age*, *MeasurementValue* and *AnimalAnonID* 
-* `all_mods` a vector of model names. The following models are supported : logistic, gompertz, tpgm, power, richards, vonbertalanffy, and fabens.
+* `all_mods` a vector of model names. The following models are supported : logistic, gompertz, tpgm, power, richards, vonbertalanffy.
 * `random` list of the model names giving the parameters that should be included an individual random effect
 * `run`: a list of Bayesian parameters including `nch` number of chains, `nthin` interval between iterations to keep, `nburnin` number of iterations to discard and `niter` total number of iterations. The default number of iterations is too small and need to be increased to reach convergence.
 
@@ -54,14 +54,14 @@ The function returns:
 
 
 ```{r example-gro_run}
-logx <- rnorm(10000, 0, 1)
+age <- rnorm(10000, 0, 1)
 id1 =  rnorm(21,0, 0.5)
 id2 =  rnorm(21,0, 0.4)
 id3 =  rnorm(21,0, 0.3)
 IND =sample(c(1:20), 100, replace = TRUE)
-logz <- 0.2+ id1[IND]+ (15 + id2[IND])* (1 - exp(-(1+ id3[IND]) * logx)) +
+z <- 0.2+ id1[IND]+ (15 + id2[IND])* (1 - exp(-(1+ id3[IND]) * age)) +
   rnorm(100, 0, 0.01)
-dat = data.frame(logx = logx, logz = logz, 
+dat = data.frame(age = age, z = z, 
                  IND = as.numeric(factor(IND ,labels = c(1:length(unique(IND)))))
 )
 
@@ -80,7 +80,7 @@ out$tab
 This function fits a series of growth models to a dataset, and select the best one by wAIC. It takes as arguments:
 
 * data_weight including at least the numeric columns *Age*, *MeasurementValue* and *AnimalAnonID* 
-* all_mods indicating the growth models that need to be fit.The following models are supported : logistic, gompertz, tpgm, power, richards, vonbertalanffy  and fabens. default = "vonBertalanffy"
+* all_mods indicating the growth models that need to be fit.The following models are supported : logistic, gompertz, tpgm, power, richards, vonbertalanffy. default = "vonBertalanffy"
 * `random` list of the model names giving the parameters that should include an individual random effect. See the example
 
 
@@ -94,10 +94,10 @@ dat = data.frame(Age = Age, MeasurementValue = MeasurementValue,
 
 #Test 4 models: vonbertalanffy including an individual random effect on z0
 #               vonbertalanffy including individual random effects on z0 and zinf
-#               fabens including an individual random effect on gamma 
-#               fabens including no individual random effect
-a = Gro_analysis(dat, all_mods  = c("vonbertalanffy", "fabens"),
-                 random = list(vonbertalanffy = c("z0", "z0, zinf"), fabens = c("gamma", "")),
+#               gompertz including an individual random effect on gamma 
+#               gompertz including no individual random effect
+a = Gro_analysis(dat, all_mods  = c("vonbertalanffy", "gompertz"),
+                 random = list(vonbertalanffy = c("z0", "z0, zinf"), gompertz = c("gamma", "")),
                  run = list(nit = 1000, nburnin = 100, nthin = 1, nch = 1))
 ```
 
@@ -105,16 +105,16 @@ a = Gro_analysis(dat, all_mods  = c("vonbertalanffy", "fabens"),
 
 This function gets the parameter and equations for the growth model and takes as arguments:
 
-* `data`, a data frame including at least the numeric columns *logx*, *logz* and *IND*
+* `data`, a data frame including at least the numeric columns *age*, *z* and *IND*
 * `random`  name of the parameters that must include an individual random effect
-* `mod` Name of the model to fit. The following models are supported : logistic, gompertz, tpgm, power, richards, vonbertalanffy, and fabens
+* `mod` Name of the model to fit. The following models are supported : logistic, gompertz, tpgm, power, richards, vonbertalanffy.
 
 
 
 ```{r example-Gro_ModSettings}
-logx <- rnorm(100, 0, 1)
-logz <- 0.2+ 15 * (1 - exp(-(1) * logx)) +rnorm(100, 0, 0.01)
-dat = data.frame(logx = logx, logz = logz,IND =sample(c(0:20), 100, replace = TRUE)
+age <- rnorm(100, 0, 1)
+z <- 0.2+ 15 * (1 - exp(-(1) * age)) +rnorm(100, 0, 0.01)
+dat = data.frame(age = age, z = z,IND =sample(c(0:20), 100, replace = TRUE)
 )
 model <- Gro_ModSettings(data = dat, mod = "vonbertalanffy")
 ```

@@ -8,6 +8,7 @@ Gro_analysis(
   data_weight,
   all_mods = c("vonbertalanffy"),
   random = list(),
+  logtransform = FALSE,
   run = list(nit = 100, nburnin = 10, nthin = 1, nch = 1),
   parallel = FALSE
 )
@@ -15,9 +16,11 @@ Gro_analysis(
 \arguments{
 \item{data_weight}{\code{data.frame} including at least the numeric columns \emph{Age}, \emph{MeasurementValue} and \emph{AnimalAnonID}}
 
-\item{all_mods}{\code{vector of character} indicating the growth models that need to be fit.The following models are supported :logistic, gompertz, tpgm, power, richards, vonbertalanffy , and fabens. default = "vonBertalanffy"}
+\item{all_mods}{\code{vector of character} indicating the growth models that need to be fit.The following models are supported :logistic, gompertz, tpgm, power, richards, vonbertalanffy. default = "vonBertalanffy"}
 
 \item{random}{{list} of the model names giving the parameters that should include an individual random effect. See the example}
+
+\item{logtransform}{{logical} whether age and measurement values should be log transform (+1 is added to avoid having log(0))}
 
 \item{run}{\code{list} Bayesian parameters. They should be increased to reach convergence \itemize{
 \item \code{nch} number of chains.
@@ -46,9 +49,9 @@ dat = data.frame(Age = Age, MeasurementValue = MeasurementValue,
 
 #Test 4 models: vonbertalanffy including an individual random effect on z0
 #               vonbertalanffy including individual random effects on z0 and zinf
-#               fabens including an individual random effect on gamma 
-#               fabens including no individual random effect
-a = Gro_analysis(dat, all_mods  = c("vonbertalanffy", "fabens"),
-                 random = list(vonbertalanffy = c("z0", "z0, zinf"), fabens = c("gamma", "")),
+#               gompertz including an individual random effect on gamma 
+#               gompertz including no individual random effect
+a = Gro_analysis(dat, all_mods  = c("vonbertalanffy", "gompertz"),
+                 random = list(vonbertalanffy = c("z0", "z0, zinf"), gompertz = c("gamma", "")),
                  run = list(nit = 1000, nburnin = 100, nthin = 1, nch = 1))
 }

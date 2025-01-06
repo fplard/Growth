@@ -15,9 +15,9 @@ Gro_run(
 \arguments{
 \item{x}{\code{numeric} index of the formula used to build the model}
 
-\item{dat}{\code{data.frame}including at least the numeric columns \emph{logx}, \emph{logz} and \emph{IND}}
+\item{dat}{\code{data.frame}including at least the numeric columns \emph{age}, \emph{z} and \emph{IND}}
 
-\item{all_mods}{\code{vector of characters} of model names. The following models are supported: logistic, gompertz, tpgm, power, richards, vonbertalanffy, and fabens.}
+\item{all_mods}{\code{vector of characters} of model names. The following models are supported: logistic, gompertz, tpgm, power, richards, vonbertalanffy.}
 
 \item{random}{{vector of character} of the same length as \code{all_mods} giving the parameters that should be included an individual random effect}
 
@@ -39,14 +39,14 @@ This function returns a \code{list}:
 Build and run the bayesian growth model \code{x} of \code{all_mods}.
 }
 \examples{
-logx <- rnorm(10000, 0, 1)
+age <- rnorm(10000, 0, 1)
 id1 =  rnorm(21,0, 0.5)
 id2 =  rnorm(21,0, 0.4)
 id3 =  rnorm(21,0, 0.3)
 IND =sample(c(1:20), 100, replace = TRUE)
-logz <- 0.2+ id1[IND]+ (15 + id2[IND])* (1 - exp(-(1+ id3[IND]) * logx)) +
+z <- 0.2+ id1[IND]+ (15 + id2[IND])* (1 - exp(-(1+ id3[IND]) * age)) +
   rnorm(100, 0, 0.01)
-dat = data.frame(logx = logx, logz = logz, 
+dat = data.frame(age = age, z = z, 
                  IND = as.numeric(factor(IND ,labels = c(1:length(unique(IND)))))
 )
 

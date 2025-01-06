@@ -14,7 +14,7 @@ flat_main.Rmd:
   vignettes: vignettes/run-growth-models.Rmd
   inflate:
     flat_file: dev/flat_main.Rmd
-    vignette_name: Run growth models
+    vignette_name: run growth models
     open_vignette: true
     check: true
     document: true
