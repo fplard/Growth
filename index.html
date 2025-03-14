@@ -4,110 +4,555 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Bayesian Growth Analysis • Growth</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
-<script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="Bayesian Growth Analysis">
+<script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Bayesian Growth Analysis">
+<meta name="description" content="Use bayesian approach to builg growth model with random effect.">
 <meta property="og:description" content="Use bayesian approach to builg growth model with random effect.">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
 </head>
-<body data-spy="scroll" data-target="#toc">
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <div class="container template-home">
-      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">Growth</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.0.9000</span>
-      </span>
-    </div>
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
 
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-<li>
-  <a href="reference/index.html">Reference</a>
+    <a class="navbar-brand me-2" href="index.html">Growth</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="articles/run-growth-models.html">run growth models</a></li>
+    <li><a class="dropdown-item" href="articles/useful-functions.html">Useful Functions</a></li>
+  </ul>
 </li>
-<li>
-  <a href="news/index.html">Changelog</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
+</form></li>
+      </ul>
 </div>
-<!--/.nav-collapse -->
+
+
   </div>
-<!--/.container -->
-</div>
-<!--/.navbar -->
-
-
-
-      </header><div class="row">
-  <div class="contents col-md-9">
-<div class="section level1">
+</nav><div class="container template-home">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="growth">Growth<a class="anchor" aria-label="anchor" href="#growth"></a>
 </h1></div>
 <!-- badges: start -->
 
-<p>The goal of Growth is to …</p>
+<p>Growth can be used to run growth models including individual random effects on clean dataset.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
+<div class="section level4">
+<h4 id="install-nimble">Install <code>nimble</code>
+<a class="anchor" aria-label="anchor" href="#install-nimble"></a>
+</h4>
+<p>If you never used the package <code>nimble</code>, you first need to install it following recommendations <a href="https://r-nimble.org/download" class="external-link">here</a></p>
 <p>You can install the development version of Growth from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"fplard/Growth"</span><span class="op">)</span></span></code></pre></div>
 </div>
+</div>
 <div class="section level2">
 <h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
 </h2>
-<p>Full documentation website on: <a href="https://fplard.github.io/Growth" class="external-link uri">https://fplard.github.io/Growth</a></p>
+<p>You can open the documentation locally on your machine using</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"docs"</span>, <span class="st">"index.html"</span>, package <span class="op">=</span> <span class="st">"Growth"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+<h2 id="simple-example">Simple example<a class="anchor" aria-label="anchor" href="#simple-example"></a>
 </h2>
-<p>This is a basic example which shows you how to solve a common problem:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">Growth</span><span class="op">)</span></span>
-<span><span class="co">## basic example code</span></span></code></pre></div>
-<p>What is special about using <code>README.Rmd</code> instead of just <code>README.md</code>? You can include R chunks like so:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">cars</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      speed           dist       </span></span>
-<span><span class="co">#&gt;  Min.   : 4.0   Min.   :  2.00  </span></span>
-<span><span class="co">#&gt;  1st Qu.:12.0   1st Qu.: 26.00  </span></span>
-<span><span class="co">#&gt;  Median :15.0   Median : 36.00  </span></span>
-<span><span class="co">#&gt;  Mean   :15.4   Mean   : 42.98  </span></span>
-<span><span class="co">#&gt;  3rd Qu.:19.0   3rd Qu.: 56.00  </span></span>
-<span><span class="co">#&gt;  Max.   :25.0   Max.   :120.00</span></span></code></pre></div>
-<p>You’ll still need to render <code>README.Rmd</code> regularly, to keep <code>README.md</code> up-to-date. <code>devtools::build_readme()</code> is handy for this.</p>
-<p>You can also embed plots, for example:</p>
-<div class="figure">
-<img src="reference/figures/README-pressure-1.png" alt="plot of chunk pressure" width="100%"><p class="caption">
-plot of chunk pressure
-</p>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">Growth</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## basic example code</span></span>
+<span><span class="co">#Create a simple data frame</span></span>
+<span><span class="va">Age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span>, <span class="fl">100</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">AnimalAnonID</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">20</span><span class="op">)</span>, <span class="fl">100</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">MeasurementValue</span> <span class="op">&lt;-</span> <span class="fl">0.2</span><span class="op">+</span><span class="fl">15</span> <span class="op">*</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="op">(</span><span class="fl">0.1</span><span class="op">)</span> <span class="op">*</span> <span class="va">Age</span><span class="op">)</span><span class="op">)</span><span class="op">+</span> </span>
+<span>                          <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">100</span>,<span class="fl">0</span>,<span class="fl">0.01</span><span class="op">)</span> <span class="op">+</span> <span class="va">AnimalAnonID</span><span class="op">*</span><span class="fl">0.1</span> </span>
+<span><span class="va">dat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Age <span class="op">=</span> <span class="va">Age</span>, MeasurementValue <span class="op">=</span> <span class="va">MeasurementValue</span>, </span>
+<span>                 AnimalAnonID <span class="op">=</span> <span class="va">AnimalAnonID</span>, MeasurementType <span class="op">=</span> <span class="st">"Live Weight"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#Test 4 models: vonbertalanffy including an individual random effect on z0</span></span>
+<span><span class="co">#               vonbertalanffy including individual random effects on z0 and zinf</span></span>
+<span><span class="co">#               fabens including an individual random effect on gamma </span></span>
+<span><span class="co">#               fabens including no individual random effect</span></span>
+<span><span class="va">out</span> <span class="op">=</span> <span class="fu"><a href="reference/Gro_analysis.html">Gro_analysis</a></span><span class="op">(</span><span class="va">dat</span>, all_mods  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"vonbertalanffy"</span>, <span class="st">"gompertz"</span><span class="op">)</span>,</span>
+<span>                   random <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>vonbertalanffy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"z0"</span>, <span class="st">"z0, zinf"</span><span class="op">)</span>, gompertz <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"alpha0"</span>, <span class="st">""</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   run <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>nit <span class="op">=</span> <span class="fl">1000</span>, nburnin <span class="op">=</span> <span class="fl">100</span>, nthin <span class="op">=</span> <span class="fl">1</span>, nch <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#Look at best model predictions and convergence</span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Gro_pred.html">Gro_pred</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat</span>, </span>
+<span>              out <span class="op">=</span> <span class="va">out</span><span class="op">$</span><span class="va">model</span>, </span>
+<span>              title <span class="op">=</span><span class="va">out</span><span class="op">$</span><span class="va">wAIC_tab</span><span class="op">$</span><span class="va">model</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="va">summary</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="va">predictions</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="va">GOF</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="va">plot_pred</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="va">convergence</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="va">posterior</span></span></code></pre></div>
 </div>
-<p>In that case, don’t forget to commit and push the resulting figure files, so they display on GitHub and CRAN.</p>
+<div class="section level2">
+<h2 id="from-data-from-the-science-extract">From data from the science extract<a class="anchor" aria-label="anchor" href="#from-data-from-the-science-extract"></a>
+</h2>
+<div class="section level4">
+<h4 id="on-your-own-computer">On your own computer<a class="anchor" aria-label="anchor" href="#on-your-own-computer"></a>
+</h4>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://glue.tidyverse.org/" class="external-link">glue</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">ISRverse</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-nimble.org" class="external-link">nimble</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">Growth</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="on-ucloud">On Ucloud<a class="anchor" aria-label="anchor" href="#on-ucloud"></a>
+</h4>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co"># Install libraries:</span></span>
+<span><span class="va">instPacks</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html" class="external-link">installed.packages</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"snowfall"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">instPacks</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"snowfall"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"ggpubr"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">instPacks</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"ggpubr"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"bbmle"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">instPacks</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"bbmle"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"BasTA"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">instPacks</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BaSTA"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"assertthat"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">instPacks</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"assertthat"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"glue"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">instPacks</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"glue"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"pbapply"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">instPacks</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pbapply"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"ggpp"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">instPacks</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"ggpp"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"nimble"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">instPacks</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"nimble"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"checkmate"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">instPacks</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"checkmate"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"paramDemo"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">instPacks</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"/work/Species360/Rpackages/latestVersion/paramDemo_1.0.0.tar.gz"</span>,</span>
+<span>                   type <span class="op">=</span> <span class="st">"source"</span>, repos <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"ISRverse"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">instPacks</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"/work/Species360/Rpackages/latestVersion/ISRverse_0.0.0.9000.tar.gz"</span>, </span>
+<span>                   type <span class="op">=</span> <span class="st">"source"</span>, repos <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"Growth"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">instPacks</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"/work/Species360/Rpackages/latestVersion/Growth_0.0.0.9000.tar.gz"</span>, </span>
+<span>                   type <span class="op">=</span> <span class="st">"source"</span>, repos <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://glue.tidyverse.org/" class="external-link">glue</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">ISRverse</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">Growth</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="load-data">Load Data<a class="anchor" aria-label="anchor" href="#load-data"></a>
+</h3>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Path to the ZIMSdata directory:</span></span>
+<span><span class="va">ZIMSdirdata</span> <span class="op">&lt;-</span> <span class="st">"/work/Species360/ZIMSdata_ext240829"</span></span>
+<span></span>
+<span><span class="va">extractDate</span> <span class="op">=</span><span class="st">"2024-08-29"</span></span>
+<span></span>
+<span><span class="va">taxa</span> <span class="op">=</span> <span class="st">"Chondrichthyes"</span></span>
+<span></span>
+<span><span class="co">#Filters</span></span>
+<span><span class="co"># Earliest date to include records</span></span>
+<span><span class="va">minDate</span> <span class="op">&lt;-</span> <span class="st">"1980-01-01"</span></span>
+<span><span class="co"># Earliest birth date to include records</span></span>
+<span><span class="va">minBirthDate</span> <span class="op">&lt;-</span> <span class="st">"1900-01-01"</span></span>
+<span><span class="co">#Whether to include only Global individuals</span></span>
+<span><span class="va">Global</span> <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="co">#Birth Type of Animals: "Captive", "Wild" or "All"</span></span>
+<span><span class="va">Birth_Type</span> <span class="op">=</span> <span class="st">"Captive"</span></span>
+<span><span class="co">#Maximum uncertainty accepted for birth dates, in days</span></span>
+<span><span class="va">uncert_birth</span> <span class="op">=</span> <span class="fl">365</span></span>
+<span></span>
+<span></span>
+<span><span class="co">#Load all data for this taxa</span></span>
+<span><span class="va">Data</span> <span class="op">&lt;-</span> <span class="fu">Load_Zimsdata</span><span class="op">(</span>taxa <span class="op">=</span> <span class="va">taxa</span>, ZIMSdir <span class="op">=</span> <span class="va">ZIMSdirdata</span>, </span>
+<span>                      species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Chondrichthyes <span class="op">=</span> <span class="st">"All"</span><span class="op">)</span>,</span>
+<span>                      Animal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                      tables<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Collection'</span>, <span class="st">"Weight"</span>, <span class="st">'Parent'</span>, <span class="st">'Move'</span><span class="op">)</span><span class="op">)</span> </span>
+<span><span class="va">Animal</span> <span class="op">&lt;-</span> <span class="fu">Prep_Animal</span><span class="op">(</span><span class="va">Data</span><span class="op">[[</span><span class="va">taxa</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Animal</span>, extractDate <span class="op">=</span> <span class="va">extractDate</span>, minBirthDate <span class="op">=</span><span class="va">minBirthDate</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="co">#Choose Species</span></span>
+<span><span class="va">List_species</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">Data</span><span class="op">$</span><span class="va">Chondrichthyes</span><span class="op">$</span><span class="va">Animal</span><span class="op">$</span><span class="va">binSpecies</span><span class="op">)</span></span>
+<span><span class="va">species</span> <span class="op">=</span><span class="st">"Rhinoptera bonasus"</span></span>
+<span></span>
+<span><span class="va">Dataspe</span> <span class="op">&lt;-</span> <span class="fu">select_species</span><span class="op">(</span><span class="va">species</span>, <span class="va">Animal</span>, <span class="va">Data</span><span class="op">[[</span><span class="va">taxa</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Collection</span>, uncert_birth <span class="op">=</span> <span class="va">uncert_birth</span>,</span>
+<span>                          Birth_Type <span class="op">=</span> <span class="va">Birth_Type</span>,</span>
+<span>                          minDate <span class="op">=</span> <span class="va">minDate</span> , extractDate <span class="op">=</span> <span class="va">extractDate</span>,</span>
+<span>                          Global <span class="op">=</span> <span class="va">Global</span><span class="op">)</span> </span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="clean-data-and-look-for-outliers">Clean data and look for outliers<a class="anchor" aria-label="anchor" href="#clean-data-and-look-for-outliers"></a>
+</h3>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># General directory:</span></span>
+<span><span class="va">analysisDir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span> <span class="op">(</span><span class="st">"/work/Species360/growth/"</span><span class="op">)</span></span>
+<span><span class="co">#Directory where to save results</span></span>
+<span><span class="va">SaveDir</span> <span class="op">=</span> <span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span> <span class="op">(</span><span class="st">"{analysisDir}savegrowth"</span><span class="op">)</span></span>
+<span><span class="va">PlotDir</span> <span class="op">=</span> <span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span> <span class="op">(</span><span class="st">"{analysisDir}plotgrowth"</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="co">#Maximum uncertainty accepted for measurement dates: weight, in days</span></span>
+<span><span class="va">uncert_date</span> <span class="op">=</span> <span class="fl">365</span></span>
+<span></span>
+<span><span class="co"># Measure type to select</span></span>
+<span><span class="va">MeasureType</span> <span class="op">=</span> <span class="st">"Live weight"</span></span>
+<span></span>
+<span><span class="co"># Conditions to estimate age at sexual maturity</span></span>
+<span><span class="va">minNrepro</span> <span class="op">=</span> <span class="fl">100</span>   <span class="co">#Minimum number of birth records</span></span>
+<span><span class="va">minNparepro</span> <span class="op">=</span> <span class="fl">30</span>  <span class="co">#Minimum number of unique parent records</span></span>
+<span></span>
+<span><span class="co">#Choose sex</span></span>
+<span><span class="va">sx</span> <span class="op">=</span> <span class="st">"All"</span> <span class="co">#can also be "Female" or "Male"</span></span>
+<span></span>
+<span><span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">Dataspe</span><span class="op">$</span><span class="va">data</span><span class="op">)</span><span class="op">&gt;</span><span class="fl">0</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="va">repr</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="kw">if</span><span class="op">(</span><span class="va">sx</span> <span class="op">!=</span> <span class="st">"All"</span><span class="op">)</span><span class="op">{</span></span>
+<span>    <span class="va">coresubset</span> <span class="op">&lt;-</span> <span class="va">Dataspe</span><span class="op">$</span><span class="va">data</span><span class="op"><a href="reference/pipe.html">%&gt;%</a></span><span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">SexType</span> <span class="op">==</span> <span class="va">sx</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="kw">else</span><span class="op">{</span><span class="va">coresubset</span> <span class="op">&lt;-</span> <span class="va">Dataspe</span><span class="op">$</span><span class="va">data</span><span class="op">}</span></span>
+<span>  <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">coresubset</span><span class="op">)</span><span class="op">&gt;</span><span class="fl">0</span><span class="op">)</span><span class="op">{</span></span>
+<span>    <span class="co">#Estimate age at sexual maturity</span></span>
+<span>    <span class="va">repr</span><span class="op">[[</span><span class="va">sx</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">Rep_main</span><span class="op">(</span>coresubset<span class="op">=</span> <span class="va">coresubset</span>, <span class="va">Data</span><span class="op">[[</span><span class="va">taxa</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Collection</span>, </span>
+<span>                           <span class="va">Data</span><span class="op">[[</span><span class="va">taxa</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Parent</span>, <span class="va">Data</span><span class="op">[[</span><span class="va">taxa</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Move</span>,  </span>
+<span>                           Repsect <span class="op">=</span> <span class="st">"agemat"</span>,</span>
+<span>                           BirthType_parent <span class="op">=</span> <span class="va">Birth_Type</span>, BirthType_offspring <span class="op">=</span> <span class="va">Birth_Type</span>, </span>
+<span>                           Global <span class="op">=</span> <span class="va">Global</span>, </span>
+<span>                           minNrepro <span class="op">=</span> <span class="va">minNrepro</span>, minNparepro <span class="op">=</span>  <span class="va">minNparepro</span></span>
+<span>    <span class="op">)</span></span>
+<span>    </span>
+<span>    <span class="va">agemat</span> <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>    <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">repr</span><span class="op">[[</span><span class="va">sx</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">&gt;</span><span class="fl">0</span><span class="op">)</span><span class="op">{</span></span>
+<span>      <span class="kw">if</span><span class="op">(</span><span class="va">repr</span><span class="op">[[</span><span class="va">sx</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">summary</span><span class="op">$</span><span class="va">amat_analyzed</span><span class="op">)</span><span class="op">{</span></span>
+<span>        <span class="va">agemat</span> <span class="op">=</span><span class="va">repr</span><span class="op">[[</span><span class="va">sx</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">agemat</span><span class="op">$</span><span class="va">ageMat</span></span>
+<span>      <span class="op">}</span></span>
+<span>    <span class="op">}</span></span>
+<span>    </span>
+<span>    <span class="co">#Clean measures</span></span>
+<span>    <span class="va">ouput</span> <span class="op">&lt;-</span> <span class="fu">Gro_cleanmeasures</span><span class="op">(</span>data <span class="op">=</span> <span class="va">Data</span><span class="op">[[</span><span class="va">taxa</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Weight</span>, coresubse <span class="op">=</span> <span class="va">coresubset</span>,</span>
+<span>                               Birth_Type <span class="op">=</span> <span class="va">Birth_Type</span>, type <span class="op">=</span><span class="st">"weight"</span>, </span>
+<span>                               uncert_date <span class="op">=</span> <span class="va">uncert_date</span>,</span>
+<span>                               MeasureType <span class="op">=</span> <span class="va">MeasureType</span>,</span>
+<span>                               mindate <span class="op">=</span> <span class="va">minDate</span><span class="op">)</span></span>
+<span>    <span class="co">#Look for outliers</span></span>
+<span>    <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">ouput</span><span class="op">$</span><span class="va">data</span><span class="op">)</span><span class="op">&gt;</span><span class="fl">0</span><span class="op">)</span><span class="op">{</span></span>
+<span>      <span class="va">data_weight</span> <span class="op">&lt;-</span> <span class="va">ouput</span><span class="op">$</span><span class="va">data</span><span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>        <span class="fu">Gro_remoutliers</span> <span class="op">(</span>taxa <span class="op">=</span> <span class="va">taxa</span>, ageMat <span class="op">=</span> <span class="va">agemat</span>, maxweight <span class="op">=</span> <span class="cn">NULL</span>, </span>
+<span>                         variableid <span class="op">=</span> <span class="st">"AnimalAnonID"</span>, min_Nmeasures <span class="op">=</span> <span class="fl">7</span>,</span>
+<span>                         perc_weight_min<span class="op">=</span><span class="fl">0.2</span>, perc_weight_max<span class="op">=</span><span class="fl">2.5</span>,</span>
+<span>                         IQR<span class="op">=</span><span class="fl">2.75</span>, minq<span class="op">=</span><span class="fl">0.025</span>, Ninterval_juv <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span>      </span>
+<span>    </span>
+<span>        <span class="va">p1</span> <span class="op">&lt;-</span><span class="fu">Gro_outplot</span><span class="op">(</span><span class="va">data_weight</span>, title <span class="op">=</span> <span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span><span class="op">(</span><span class="st">"{species} {sx}"</span><span class="op">)</span>, ylimit <span class="op">=</span> <span class="cn">NULL</span>, xlimit <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span>      <span class="op">}</span></span>
+<span>      </span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span></span>
+<span></span>
+<span><span class="va">p1</span></span>
+<span></span>
+<span><span class="co">#Remove outliers</span></span>
+<span><span class="va">data_weight</span> <span class="op">&lt;-</span> <span class="va">data_weight</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span><span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">KEEP</span> <span class="op">==</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="run-growth-models">Run growth models<a class="anchor" aria-label="anchor" href="#run-growth-models"></a>
+</h3>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">Growth</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#Models: "logistic", "gompertz", "chapmanRichards", "vonBertalanffy", "gam", and/or "polynomial"</span></span>
+<span><span class="va">models_gro</span>  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"vonbertalanffy"</span>, <span class="st">"gompertz"</span><span class="op">)</span></span>
+<span><span class="va">random</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>vonbertalanffy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"z0"</span>, <span class="st">"z0, zinf"</span><span class="op">)</span>, gompertz <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gamma"</span>, <span class="st">""</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">run</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>nit <span class="op">=</span> <span class="fl">1000</span>, nburnin <span class="op">=</span> <span class="fl">100</span>, nthin <span class="op">=</span> <span class="fl">1</span>, nch <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co"># Conditions to run the growth analysis</span></span>
+<span><span class="va">minNgro</span> <span class="op">=</span> <span class="fl">100</span> <span class="co">#Minimum number of weights</span></span>
+<span><span class="va">minNIgro</span> <span class="op">=</span> <span class="fl">50</span> <span class="co">#Minimum number of individuals</span></span>
+<span></span>
+<span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data_weight</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="va">minNgro</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">data_weight</span><span class="op">$</span><span class="va">AnimalAnonID</span><span class="op">)</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="va">minNIgro</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="co">#run analysis</span></span>
+<span>    <span class="va">out</span><span class="op">&lt;-</span> <span class="fu">Growth</span><span class="fu">::</span><span class="fu"><a href="reference/Gro_analysis.html">Gro_analysis</a></span><span class="op">(</span>dat <span class="op">=</span> <span class="va">data_weight</span> , </span>
+<span>                       all_mods <span class="op">=</span> <span class="va">models_gro</span>, random <span class="op">=</span><span class="va">random</span>,</span>
+<span>                       run <span class="op">=</span> <span class="va">run</span><span class="op">)</span></span>
+<span>    </span>
+<span>    <span class="co">#Look at best model predictions and convergence</span></span>
+<span>    <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Gro_pred.html">Gro_pred</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">data_weight</span>, </span>
+<span>                  out <span class="op">=</span> <span class="va">out</span><span class="op">$</span><span class="va">model</span>, </span>
+<span>                  title <span class="op">=</span><span class="va">out</span><span class="op">$</span><span class="va">wAIC_tab</span><span class="op">$</span><span class="va">model</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="op">}</span>      </span>
+<span>  </span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co">#Look at the wAIC table comparing all models</span></span>
+<span><span class="va">out</span><span class="op">$</span><span class="va">wAIC_tab</span></span>
+<span></span>
+<span><span class="co">#Look at the model prediction and convergence </span></span>
+<span><span class="op">?</span><span class="va">Gro_pred</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="va">summary</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="va">predictions</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="va">GOF</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="va">plot_pred</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="va">convergence</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="va">posterior</span>  </span></code></pre></div>
 </div>
 </div>
-  </div>
-
-  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-    <div class="license">
+<div class="section level2">
+<h2 id="simulation-to-test-functions">Simulation to test functions<a class="anchor" aria-label="anchor" href="#simulation-to-test-functions"></a>
+</h2>
+<div class="section level3">
+<h3 id="functions-to-simulate-data">functions to simulate data<a class="anchor" aria-label="anchor" href="#functions-to-simulate-data"></a>
+</h3>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co">#Functions to simulate data</span></span>
+<span><span class="va">vonbertalanffy</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">N</span> <span class="op">=</span> <span class="fl">10000</span>,<span class="va">Nind</span> <span class="op">=</span> <span class="fl">100</span>, </span>
+<span>                             <span class="va">sd_z0</span> <span class="op">=</span> <span class="fl">0</span>, <span class="va">sd_gamma</span> <span class="op">=</span> <span class="fl">0</span>,<span class="va">sd_zinf</span> <span class="op">=</span> <span class="fl">0</span>, </span>
+<span>                           <span class="va">z0</span> <span class="op">=</span> <span class="fl">0.2</span>, <span class="va">zinf</span> <span class="op">=</span> <span class="fl">15</span>, <span class="va">gamma</span> <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>                           <span class="va">sd_res</span> <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span><span class="op">{</span></span>
+<span><span class="va">age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">N</span>, <span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">id1</span> <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">Nind</span>,<span class="fl">0</span>, <span class="va">sd_z0</span><span class="op">)</span></span>
+<span><span class="va">id2</span> <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">Nind</span>,<span class="fl">0</span>, <span class="va">sd_zinf</span><span class="op">)</span></span>
+<span><span class="va">id3</span> <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">Nind</span>,<span class="fl">0</span>, <span class="va">sd_gamma</span><span class="op">)</span></span>
+<span><span class="va">IND</span> <span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">Nind</span><span class="op">)</span>, <span class="va">N</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">z0</span><span class="op">+</span> <span class="va">id1</span><span class="op">[</span><span class="va">IND</span><span class="op">]</span><span class="op">+</span> <span class="op">(</span><span class="va">zinf</span> <span class="op">+</span> <span class="va">id2</span><span class="op">[</span><span class="va">IND</span><span class="op">]</span><span class="op">)</span><span class="op">*</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="op">(</span><span class="va">gamma</span><span class="op">+</span> <span class="va">id3</span><span class="op">[</span><span class="va">IND</span><span class="op">]</span><span class="op">)</span> <span class="op">*</span> <span class="va">age</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">N</span>, <span class="fl">0</span>,<span class="va">sd_res</span><span class="op">)</span></span>
+<span><span class="va">dat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Age <span class="op">=</span> <span class="va">age</span>, MeasurementValue <span class="op">=</span> <span class="va">z</span>, </span>
+<span>                 AnimalAnonID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">IND</span> ,labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">IND</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">logistic</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">N</span> <span class="op">=</span> <span class="fl">10000</span>,<span class="va">Nind</span> <span class="op">=</span> <span class="fl">100</span>, </span>
+<span>                           <span class="va">sd_zinf</span> <span class="op">=</span> <span class="fl">0</span>, <span class="va">sd_gamma</span> <span class="op">=</span> <span class="fl">0</span>, <span class="va">sd_xinfl</span> <span class="op">=</span> <span class="fl">0</span>, </span>
+<span>                     <span class="va">xinfl</span> <span class="op">=</span> <span class="fl">2</span>, <span class="va">zinf</span> <span class="op">=</span> <span class="fl">15</span>, <span class="va">gamma</span> <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>                           <span class="va">sd_res</span> <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span><span class="op">{</span></span>
+<span><span class="va">age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">N</span>, <span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">id1</span> <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">Nind</span>,<span class="fl">0</span>, <span class="va">sd_xinfl</span><span class="op">)</span></span>
+<span><span class="va">id2</span> <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">Nind</span>,<span class="fl">0</span>, <span class="va">sd_zinf</span><span class="op">)</span></span>
+<span><span class="va">id3</span> <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">Nind</span>,<span class="fl">0</span>, <span class="va">sd_gamma</span><span class="op">)</span></span>
+<span><span class="va">IND</span> <span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">Nind</span><span class="op">)</span>, <span class="va">N</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">z</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">zinf</span> <span class="op">+</span> <span class="va">id2</span><span class="op">[</span><span class="va">IND</span><span class="op">]</span><span class="op">)</span><span class="op">/</span> <span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="op">(</span><span class="va">gamma</span><span class="op">+</span> <span class="va">id3</span><span class="op">[</span><span class="va">IND</span><span class="op">]</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span><span class="va">age</span><span class="op">-</span><span class="op">(</span><span class="va">xinfl</span><span class="op">+</span> <span class="va">id1</span><span class="op">[</span><span class="va">IND</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">N</span>, <span class="fl">0</span>, <span class="va">sd_res</span><span class="op">)</span></span>
+<span><span class="va">dat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Age <span class="op">=</span> <span class="va">age</span>, MeasurementValue <span class="op">=</span> <span class="va">z</span>, </span>
+<span>                 AnimalAnonID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">IND</span> ,labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">IND</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">gompertz</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">N</span> <span class="op">=</span> <span class="fl">10000</span>,<span class="va">Nind</span> <span class="op">=</span> <span class="fl">100</span>, </span>
+<span>                           <span class="va">sd_alpha</span> <span class="op">=</span> <span class="fl">0</span>, <span class="va">sd_zinf</span> <span class="op">=</span> <span class="fl">0</span>, <span class="va">sd_gamma</span> <span class="op">=</span> <span class="fl">0</span>, </span>
+<span>                     <span class="va">alpha</span> <span class="op">=</span> <span class="op">-</span><span class="fl">0.7</span>, <span class="va">zinf</span> <span class="op">=</span> <span class="fl">15</span>, <span class="va">gamma</span> <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>                           </span>
+<span>                           <span class="va">sd_res</span> <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">{</span></span>
+<span><span class="va">age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">N</span>, <span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">id1</span> <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">Nind</span>,<span class="fl">0</span>, <span class="va">sd_alpha</span><span class="op">)</span></span>
+<span><span class="va">id2</span> <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">Nind</span>,<span class="fl">0</span>, <span class="va">sd_zinf</span><span class="op">)</span></span>
+<span><span class="va">id3</span> <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">Nind</span>,<span class="fl">0</span>, <span class="va">sd_gamma</span><span class="op">)</span></span>
+<span><span class="va">IND</span> <span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">Nind</span><span class="op">)</span>, <span class="va">N</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">z</span> <span class="op">&lt;-</span>  <span class="op">(</span><span class="va">zinf</span> <span class="op">+</span> <span class="va">id2</span><span class="op">[</span><span class="va">IND</span><span class="op">]</span><span class="op">)</span><span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="op">(</span><span class="va">alpha</span><span class="op">+</span> <span class="va">id1</span><span class="op">[</span><span class="va">IND</span><span class="op">]</span><span class="op">)</span><span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="op">(</span><span class="va">gamma</span><span class="op">+</span> <span class="va">id3</span><span class="op">[</span><span class="va">IND</span><span class="op">]</span><span class="op">)</span> <span class="op">*</span> <span class="va">age</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">N</span>, <span class="fl">0</span>, <span class="va">sd_res</span><span class="op">)</span></span>
+<span><span class="va">dat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Age <span class="op">=</span> <span class="va">age</span>, MeasurementValue <span class="op">=</span> <span class="va">z</span>, </span>
+<span>                 AnimalAnonID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">IND</span> ,labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">IND</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">tpgm</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">N</span> <span class="op">=</span> <span class="fl">10000</span>,<span class="va">Nind</span> <span class="op">=</span> <span class="fl">100</span>, </span>
+<span>                           <span class="va">sd_zinf</span> <span class="op">=</span> <span class="fl">0</span>, <span class="va">sd_gamma</span> <span class="op">=</span> <span class="fl">0</span>, <span class="va">sd_age0</span> <span class="op">=</span> <span class="fl">0</span>,  <span class="va">sd_h</span> <span class="op">=</span> <span class="fl">0</span>,  <span class="va">sd_th</span> <span class="op">=</span> <span class="fl">0</span>, </span>
+<span>                 <span class="va">age0</span> <span class="op">=</span> <span class="fl">1</span>, <span class="va">h</span> <span class="op">=</span> <span class="fl">1</span>, <span class="va">th</span> <span class="op">=</span> <span class="fl">0.5</span>, <span class="va">zinf</span> <span class="op">=</span> <span class="fl">15</span>, <span class="va">gamma</span> <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>                           </span>
+<span>                           <span class="va">sd_res</span> <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span><span class="op">{</span></span>
+<span><span class="va">age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">N</span>, <span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">id0</span> <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">Nind</span>,<span class="fl">0</span>, <span class="va">sd_age0</span><span class="op">)</span></span>
+<span><span class="va">idh</span> <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">Nind</span>,<span class="fl">0</span>, <span class="va">sd_h</span><span class="op">)</span></span>
+<span><span class="va">idth</span> <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">Nind</span>,<span class="fl">0</span>, <span class="va">sd_th</span><span class="op">)</span></span>
+<span><span class="va">id2</span> <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">Nind</span>,<span class="fl">0</span>, <span class="va">sd_zinf</span><span class="op">)</span></span>
+<span><span class="va">id3</span> <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">Nind</span>,<span class="fl">0</span>, <span class="va">sd_gamma</span><span class="op">)</span></span>
+<span><span class="va">IND</span> <span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">Nind</span><span class="op">)</span>, <span class="va">N</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">z</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">zinf</span> <span class="op">+</span> <span class="va">id2</span><span class="op">[</span><span class="va">IND</span><span class="op">]</span><span class="op">)</span><span class="op">*</span>    <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span> <span class="op">(</span><span class="va">gamma</span><span class="op">+</span> <span class="va">id3</span><span class="op">[</span><span class="va">IND</span><span class="op">]</span><span class="op">)</span> <span class="op">*</span><span class="op">(</span><span class="fl">1</span><span class="op">-</span> <span class="op">(</span><span class="va">h</span><span class="op">+</span><span class="va">idh</span><span class="op">[</span><span class="va">IND</span><span class="op">]</span><span class="op">)</span><span class="op">/</span><span class="op">(</span><span class="op">(</span><span class="va">age</span> <span class="op">-</span><span class="op">(</span><span class="va">th</span><span class="op">+</span><span class="va">idth</span><span class="op">[</span><span class="va">IND</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">*</span><span class="op">(</span><span class="va">age</span> <span class="op">-</span> <span class="op">(</span><span class="va">age0</span><span class="op">+</span><span class="va">id0</span><span class="op">[</span><span class="va">IND</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">N</span>, <span class="fl">0</span>, <span class="va">sd_res</span><span class="op">)</span></span>
+<span>                   </span>
+<span><span class="va">dat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Age <span class="op">=</span> <span class="va">age</span>, MeasurementValue <span class="op">=</span> <span class="va">z</span>, </span>
+<span>                 AnimalAnonID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">IND</span> ,labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">IND</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">power</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">N</span> <span class="op">=</span> <span class="fl">10000</span>,<span class="va">Nind</span> <span class="op">=</span> <span class="fl">100</span>, </span>
+<span>                             <span class="va">sd_alpha0</span> <span class="op">=</span> <span class="fl">0</span>, <span class="va">sd_alpha1</span> <span class="op">=</span> <span class="fl">0</span>, <span class="va">sd_beta</span> <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>                  <span class="va">alpha0</span> <span class="op">=</span> <span class="fl">9</span>, <span class="va">alpha1</span> <span class="op">=</span> <span class="fl">2.5</span>, <span class="va">beta</span> <span class="op">=</span> <span class="fl">3.5</span>,</span>
+<span>                           </span>
+<span>                           <span class="va">sd_res</span> <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span><span class="op">{</span></span>
+<span><span class="va">age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">N</span>, <span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">id0</span> <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">Nind</span>,<span class="fl">0</span>, <span class="va">sd_alpha0</span><span class="op">)</span></span>
+<span><span class="va">id1</span> <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">Nind</span>,<span class="fl">0</span>, <span class="va">sd_alpha1</span><span class="op">)</span></span>
+<span><span class="va">idb</span> <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">Nind</span>,<span class="fl">0</span>, <span class="va">sd_beta</span><span class="op">)</span></span>
+<span><span class="va">IND</span> <span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">Nind</span><span class="op">)</span>, <span class="va">N</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">z</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">alpha0</span><span class="op">+</span><span class="va">id0</span><span class="op">[</span><span class="va">IND</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="va">alpha1</span><span class="op">+</span><span class="va">id1</span><span class="op">[</span><span class="va">IND</span><span class="op">]</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span><span class="va">age</span><span class="op">^</span><span class="op">(</span><span class="va">beta</span><span class="op">+</span><span class="va">idb</span><span class="op">[</span><span class="va">IND</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">+</span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">N</span>, <span class="fl">0</span>, <span class="va">sd_res</span><span class="op">)</span></span>
+<span><span class="va">dat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Age <span class="op">=</span> <span class="va">age</span>, MeasurementValue <span class="op">=</span> <span class="va">z</span>, </span>
+<span>                 AnimalAnonID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">IND</span> ,labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">IND</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">richards</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">N</span> <span class="op">=</span> <span class="fl">10000</span>,<span class="va">Nind</span> <span class="op">=</span> <span class="fl">100</span>, </span>
+<span>                           <span class="va">sd_z0</span> <span class="op">=</span> <span class="fl">0</span>, <span class="va">sd_gamma</span> <span class="op">=</span> <span class="fl">0</span>, <span class="va">sd_zinf</span> <span class="op">=</span> <span class="fl">0</span>, <span class="va">sd_P</span> <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>                     <span class="va">z0</span> <span class="op">=</span> <span class="fl">0.2</span>, <span class="va">zinf</span> <span class="op">=</span> <span class="fl">15</span>, <span class="va">gamma</span> <span class="op">=</span> <span class="fl">0.5</span>,<span class="va">P</span> <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>                                  <span class="va">sd_res</span> <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">{</span><span class="fl">.01</span></span>
+<span><span class="va">age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">N</span>, <span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">id1</span> <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">Nind</span>,<span class="fl">0</span>, <span class="va">sd_z0</span><span class="op">)</span></span>
+<span><span class="va">id2</span> <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">Nind</span>,<span class="fl">0</span>, <span class="va">sd_zinf</span><span class="op">)</span></span>
+<span><span class="va">id3</span> <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">Nind</span>,<span class="fl">0</span>, <span class="va">sd_gamma</span><span class="op">)</span></span>
+<span><span class="va">idP</span> <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">Nind</span>,<span class="fl">0</span>, <span class="va">sd_P</span><span class="op">)</span></span>
+<span><span class="va">IND</span> <span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">Nind</span><span class="op">)</span>, <span class="va">N</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">z</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">zinf</span> <span class="op">+</span> <span class="va">id2</span><span class="op">[</span><span class="va">IND</span><span class="op">]</span><span class="op">)</span><span class="op">*</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span>  <span class="op">(</span><span class="va">z0</span><span class="op">+</span> <span class="va">id1</span><span class="op">[</span><span class="va">IND</span><span class="op">]</span><span class="op">)</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="op">(</span><span class="va">gamma</span><span class="op">+</span> <span class="va">id3</span><span class="op">[</span><span class="va">IND</span><span class="op">]</span><span class="op">)</span> <span class="op">*</span> <span class="va">age</span><span class="op">)</span><span class="op">)</span><span class="op">^</span><span class="op">(</span><span class="va">P</span><span class="op">+</span><span class="va">idP</span><span class="op">[</span><span class="va">IND</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">N</span>, <span class="fl">0</span>, <span class="va">sd_res</span><span class="op">)</span></span>
+<span><span class="va">dat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Age <span class="op">=</span> <span class="va">age</span>, MeasurementValue <span class="op">=</span> <span class="va">z</span>, </span>
+<span>                 AnimalAnonID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">IND</span> ,labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">IND</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<p>###Run simulation</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">Growth</span><span class="op">)</span></span>
+<span><span class="va">Nsim</span> <span class="op">=</span> <span class="fl">5</span></span>
+<span><span class="va">N</span> <span class="op">=</span> <span class="fl">10000</span></span>
+<span><span class="va">Nind</span> <span class="op">=</span> <span class="fl">100</span></span>
+<span><span class="va">run</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>nit <span class="op">=</span> <span class="fl">1000</span>, nburnin <span class="op">=</span> <span class="fl">100</span>, nthin <span class="op">=</span> <span class="fl">1</span>, nch <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#Maximum uncertainty accepted for measurement dates: weight, in days</span></span>
+<span><span class="va">uncert_date</span> <span class="op">=</span> <span class="fl">365</span></span>
+<span><span class="va">models_gro</span>  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"logistic"</span>, <span class="st">"gompertz"</span>, <span class="st">"richards"</span>, <span class="st">"vonbertalanffy"</span>, <span class="st">"tpgm"</span>, <span class="st">"power"</span><span class="op">)</span></span>
+<span><span class="va">random</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>logistic<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"zinf"</span>, <span class="st">"gamma"</span>, <span class="st">"zinf, gamma"</span><span class="op">)</span>,</span>
+<span>              gompertz <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>,<span class="st">"zinf"</span>, <span class="st">"gamma"</span>, <span class="st">"zinf, gamma"</span><span class="op">)</span>,</span>
+<span>              richards <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>,<span class="st">"z0"</span>,<span class="st">"gamma"</span>, <span class="st">"z0, gamma"</span><span class="op">)</span>,</span>
+<span>              vonbertalanffy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>,<span class="st">"z0"</span>,<span class="st">"gamma"</span>, <span class="st">"z0, gamma"</span>, <span class="st">"zinf"</span>, <span class="st">"z0, zinf"</span>, <span class="st">"zinf, gamma"</span>, <span class="st">"zinf, z0, gamma"</span><span class="op">)</span>, </span>
+<span>              tpgm<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zinf"</span>,<span class="st">"gamma"</span>, <span class="st">"zinf, gamma"</span><span class="op">)</span>,</span>
+<span>              power <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"alpha0"</span>,<span class="st">"alpha1"</span>, <span class="st">"alpha0, alpha1"</span><span class="op">)</span><span class="op">)</span></span>
+<span> <span class="va">funct</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">logistic</span>, <span class="va">gompertz</span>, <span class="va">richards</span>, <span class="va">vonbertalanffy</span>, <span class="va">tpgm</span>, <span class="va">power</span><span class="op">)</span></span>
+<span><span class="co">#Simulate data</span></span>
+<span> <span class="va">TAB</span> <span class="op">=</span> <span class="fu">tibble</span><span class="op">(</span>sim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
+<span>                  model_type<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
+<span>                  random<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
+<span>                  truemodel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
+<span>                  truerandom <span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
+<span>                mu_z0 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, </span>
+<span>                mu_zinf <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
+<span>                mu_gamma <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, </span>
+<span>                mu_xinfl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, </span>
+<span>                mu_age0 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, </span>
+<span>                mu_alpha0 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, </span>
+<span>                mu_alpha1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
+<span>                mu_h <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, </span>
+<span>                mu_th <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, </span>
+<span>                mu_P <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, </span>
+<span>                mu_beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, </span>
+<span>                mu_alpha <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
+<span>                sigma_z0 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, </span>
+<span>                sigma_zinf <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
+<span>                sigma_gamma <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, </span>
+<span>                sigma_xinfl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, </span>
+<span>                sigma_age0 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, </span>
+<span>                sigma_alpha0 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, </span>
+<span>                sigma_alpha1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
+<span>                sigma_h <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, </span>
+<span>                sigma_th <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, </span>
+<span>                sigma_P <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, </span>
+<span>                sigma_beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, </span>
+<span>                sigma_alpha <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
+<span>                sigma_res<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span> </span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">fs</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">6</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
+<span>   <span class="va">fun</span> <span class="op">=</span> <span class="va">funct</span><span class="op">[</span><span class="va">fs</span><span class="op">]</span></span>
+<span>  <span class="va">nfun</span> <span class="op">=</span> <span class="va">models_gro</span><span class="op">[</span><span class="va">fs</span><span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nfun</span><span class="op">)</span></span>
+<span> <span class="kw">for</span> <span class="op">(</span><span class="va">rand</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">random</span><span class="op">[[</span><span class="va">nfun</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">rand</span><span class="op">)</span></span>
+<span>  <span class="va">sd1</span> <span class="op">=</span> <span class="va">sd2</span> <span class="op">=</span> <span class="va">sd3</span> <span class="op">=</span> <span class="fl">0</span></span>
+<span><span class="kw">if</span><span class="op">(</span><span class="va">rand</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span><span class="op">{</span><span class="va">sd1</span> <span class="op">=</span> <span class="fl">0.3</span><span class="op">}</span></span>
+<span><span class="kw">if</span><span class="op">(</span><span class="va">rand</span> <span class="op">==</span> <span class="fl">3</span><span class="op">)</span><span class="op">{</span><span class="va">sd2</span> <span class="op">=</span> <span class="fl">0.2</span><span class="op">}</span></span>
+<span><span class="kw">if</span><span class="op">(</span><span class="va">rand</span> <span class="op">==</span> <span class="fl">4</span><span class="op">)</span><span class="op">{</span><span class="va">sd2</span> <span class="op">=</span> <span class="fl">0.2</span>; <span class="va">sd1</span> <span class="op">=</span> <span class="fl">0.6</span><span class="op">}</span></span>
+<span><span class="kw">if</span><span class="op">(</span><span class="va">rand</span> <span class="op">==</span> <span class="fl">5</span><span class="op">)</span><span class="op">{</span><span class="va">sd3</span> <span class="op">=</span> <span class="fl">0.2</span><span class="op">}</span></span>
+<span><span class="kw">if</span><span class="op">(</span><span class="va">rand</span> <span class="op">==</span> <span class="fl">6</span><span class="op">)</span><span class="op">{</span><span class="va">sd3</span> <span class="op">=</span> <span class="fl">0.2</span>; <span class="va">sd1</span> <span class="op">=</span> <span class="fl">0.6</span><span class="op">}</span></span>
+<span><span class="kw">if</span><span class="op">(</span><span class="va">rand</span> <span class="op">==</span> <span class="fl">7</span><span class="op">)</span><span class="op">{</span><span class="va">sd2</span> <span class="op">=</span> <span class="fl">0.2</span>; <span class="va">sd3</span> <span class="op">=</span> <span class="fl">0.4</span><span class="op">}</span></span>
+<span><span class="kw">if</span><span class="op">(</span><span class="va">rand</span> <span class="op">==</span> <span class="fl">8</span><span class="op">)</span><span class="op">{</span><span class="va">sd2</span> <span class="op">=</span> <span class="fl">0.2</span>; <span class="va">sd3</span> <span class="op">=</span> <span class="fl">0.2</span>; <span class="va">sd1</span> <span class="op">=</span> <span class="fl">0.4</span><span class="op">}</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">sim</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span> <span class="va">Nsim</span><span class="op">)</span><span class="op">{</span></span>
+<span>  </span>
+<span>   <span class="va">dat</span> <span class="op">&lt;-</span> <span class="va">fun</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">(</span><span class="va">N</span>,<span class="va">Nind</span>, </span>
+<span>             <span class="va">sd1</span>,  <span class="va">sd2</span>, <span class="va">sd3</span><span class="op">)</span><span class="op"><a href="reference/pipe.html">%&gt;%</a></span><span class="va">drop_na</span><span class="op"><a href="reference/pipe.html">%&gt;%</a></span><span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">MeasurementValue</span> <span class="op">&gt;</span><span class="fl">0</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">modelsgro</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">models_gro</span>,<span class="fl">3</span>, replace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>    <span class="va">modelsgro</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">modelsgro</span>, <span class="va">nfun</span><span class="op">)</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="va">rando</span> <span class="op">=</span> <span class="va">random</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">models_gro</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">modelsgro</span><span class="op">)</span><span class="op">]</span></span>
+<span>    <span class="co">#run analysis</span></span>
+<span>    <span class="va">out</span><span class="op">&lt;-</span> <span class="fu">Growth</span><span class="fu">::</span><span class="fu"><a href="reference/Gro_analysis.html">Gro_analysis</a></span><span class="op">(</span>dat <span class="op">=</span> <span class="va">dat</span> , </span>
+<span>                       all_mods <span class="op">=</span> <span class="va">modelsgro</span>, random <span class="op">=</span><span class="va">rando</span>,</span>
+<span>                       run <span class="op">=</span> <span class="va">run</span><span class="op">)</span></span>
+<span>    </span>
+<span>  <span class="va">toplot</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">str_which</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">model</span><span class="op">$</span><span class="va">coef</span><span class="op">)</span>, <span class="st">"mu"</span><span class="op">)</span>,</span>
+<span>             <span class="fu">str_which</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">model</span><span class="op">$</span><span class="va">coef</span><span class="op">)</span>, <span class="st">"sigma"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">beta_tt</span> <span class="op">&lt;-</span> <span class="va">out</span><span class="op">$</span><span class="va">model</span><span class="op">$</span><span class="va">coef</span><span class="op">[</span>,<span class="va">toplot</span><span class="op">]</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">wAIC_tab</span><span class="op">$</span><span class="va">model_type</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="va">resrb</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/sum_nim.html">sum_nim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span> <span class="va">beta_tt</span><span class="op">)</span>, <span class="va">out</span><span class="op">$</span><span class="va">model</span><span class="op">$</span><span class="va">run</span><span class="op">$</span><span class="va">nch</span><span class="op">)</span><span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu">select</span><span class="op">(</span><span class="va">mean</span><span class="op">)</span><span class="op"><a href="reference/pipe.html">%&gt;%</a></span><span class="va">rownames_to_column</span><span class="op"><a href="reference/pipe.html">%&gt;%</a></span><span class="fu">pivot_wider</span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">rowname</span>, values_from <span class="op">=</span> <span class="va">mean</span><span class="op">)</span></span>
+<span>    <span class="va">a</span> <span class="op">=</span> <span class="va">random</span><span class="op">[[</span><span class="va">nfun</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">rand</span><span class="op">]</span></span>
+<span>  <span class="va">TAB</span><span class="op">&lt;-</span> <span class="va">TAB</span><span class="op"><a href="reference/pipe.html">%&gt;%</a></span><span class="fu">add_row</span><span class="op">(</span></span>
+<span>   <span class="fu">tibble_row</span> <span class="op">(</span>sim <span class="op">=</span> <span class="va">sim</span>,</span>
+<span>                  model_type <span class="op">=</span> <span class="va">out</span><span class="op">$</span><span class="va">wAIC_tab</span><span class="op">$</span><span class="va">model_type</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>                  random<span class="op">=</span><span class="va">out</span><span class="op">$</span><span class="va">wAIC_tab</span><span class="op">$</span><span class="va">random</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>                  truemodel <span class="op">=</span> <span class="va">nfun</span>,</span>
+<span>                  truerandom <span class="op">=</span><span class="va">a</span>, <span class="va">resrb</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span> </span>
+<span>   <span class="op">}</span>  </span>
+<span></span>
+<span> <span class="op">}</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/save.html" class="external-link">save</a></span><span class="op">(</span><span class="va">TAB</span>, file <span class="op">=</span><span class="st">"ressimu2.Rdata"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+</div>
+</div>
+</div>
+  </main><aside class="col-md-3"><div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>
@@ -145,23 +590,20 @@ plot of chunk pressure
 </ul>
 </div>
 
-  </div>
+  </aside>
 </div>
 
 
-      <footer><div class="copyright">
-  <p></p>
-<p>Developed by Floriane Plard.</p>
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by Floriane Plard.</p>
 </div>
 
-<div class="pkgdown">
-  <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
-      </footer>
+    </footer>
 </div>
-
 
 
 

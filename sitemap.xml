@@ -3,9 +3,23 @@
 <url><loc>/CODE_OF_CONDUCT.html</loc></url>
 <url><loc>/LICENSE-text.html</loc></url>
 <url><loc>/LICENSE.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
+<url><loc>/articles/run-growth-models.html</loc></url>
+<url><loc>/articles/useful-functions.html</loc></url>
 <url><loc>/authors.html</loc></url>
 <url><loc>/index.html</loc></url>
 <url><loc>/news/index.html</loc></url>
+<url><loc>/reference/Gro_ModSettings.html</loc></url>
+<url><loc>/reference/Gro_analysis.html</loc></url>
+<url><loc>/reference/Gro_pred.html</loc></url>
+<url><loc>/reference/Gro_run.html</loc></url>
+<url><loc>/reference/Gro_writenimblecode.html</loc></url>
+<url><loc>/reference/Growth-package.html</loc></url>
+<url><loc>/reference/Rhatfun.html</loc></url>
+<url><loc>/reference/conv_plot.html</loc></url>
+<url><loc>/reference/hist_post.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/pipe.html</loc></url>
+<url><loc>/reference/sum_nim.html</loc></url>
 </urlset>
 
