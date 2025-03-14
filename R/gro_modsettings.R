@@ -25,7 +25,7 @@
 # Set growth model parameters:
 Gro_ModSettings <- function(data, random =NULL, mod = "vonbertalanffy") {
   
-  assert_that(mod %in% c("logistic", "gompertz", "richards", "vonbertalanffy", "tpgm", "power", "richard"), msg = "The growth models supported are: logistic, gompertz, tpgm, power, richards, vonbertalanffy")
+  assert_that(mod %in% c("logistic", "gompertz", "richards", "vonbertalanffy", "tpgm", "power"), msg = "The growth models supported are: logistic, gompertz, tpgm, power, richards, vonbertalanffy")
   assert_that(is.data.frame(data))
   assert_that(data %has_name% c('age', 'z', 'IND'))
   assert_that(is.numeric(data$age))
@@ -62,7 +62,7 @@ if(mod == "gompertz"){
    for (j in 1:N){{
        z[j] ~dnorm( zinf[IND[j]] * exp(-alpha[IND[j]]*exp(- gamma[IND[j]] * age[j])), sigma_res)}}"
     model <- function(age,coef){
-         coef$mu_zinf * exp(-coef$mu_alpha*exp(-mu_gamma * age))
+         coef$mu_zinf * exp(-coef$mu_alpha*exp(-coef$mu_gamma * age))
     }
     inits <-  list(mu_alpha= 0,
                  mu_zinf = max(data$z),
@@ -103,9 +103,9 @@ if(mod == "gompertz"){
       
     model_nim <- "
    for (j in 1:N){{
-       z[j] ~dnorm(zinf[IND[j]] *    (1 - exp(- gamma[IND[j]] *(1- h[IND[j]]/((age[j] -th[IND[j]])^2+1) *(age[j] - age0[IND[j]])), sigma_res)}}"
+       z[j] ~dnorm(zinf[IND[j]] *    (1 - exp(- gamma[IND[j]] *(1- h[IND[j]]/((age[j] -th[IND[j]])^2+1)) *(age[j] - age0[IND[j]]))), sigma_res)}}"
     model <- function(age,coef){
-      coef$mu_zinf * (1 - exp(- coef$mu_gamma (1-coef$mu_h/((age -coef$mu_th)^2+1)) * (age - coef$mu_age0)))
+      coef$mu_zinf * (1 - exp(- coef$mu_gamma*(1-coef$mu_h/((age -coef$mu_th)^2+1)) * (age - coef$mu_age0)))
     }
          inits <-  list(mu_age0= 0,
                  mu_zinf = max(data$z), mu_h = 0, mu_th = 1,
@@ -127,7 +127,7 @@ if(mod == "gompertz"){
        z[j] ~dnorm(alpha0[IND[j]] + alpha1[IND[j]] * (age[j]^(beta[IND[j]])), sigma_res)}}"
     model <- function(age,coef){
    
-      coef$mu_alpha0 + coef$mu_alpha1 * (age)^(coef$mu_beta)
+      coef$mu_alpha0 + coef$mu_alpha1 * (age^(coef$mu_beta))
     }
       inits <-  list(mu_alpha0= 0,
                  mu_alpha1 = 1,
@@ -136,11 +136,11 @@ if(mod == "gompertz"){
                  
                  
   )
-  maxval = list(alpha0 =  -10, alpha1 = -10, beta = 0)
-  minval = list(alpha0 = 10, alpha1 = 10, beta = 5)
-  param = c("mu_alpha0","mu_alpha1", "mu_gamma",
+  minval = list(alpha0 =  -10, alpha1 = -10, beta = 0)
+  maxval = list(alpha0 = 10, alpha1 = 10, beta = 5)
+  param = c("mu_alpha0","mu_alpha1", "mu_beta",
             "sigma_res",
-            "alpha0", "alpha1", "gamma")
+            "alpha0", "alpha1", "beta")
    }
      if(mod == "richards"){
     model_nim <- "

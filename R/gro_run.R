@@ -22,6 +22,7 @@
 #'           }
 #' 
 #' @import dplyr assertthat nimble
+#' @importFrom nimble getNimbleOption
 #' 
 #' @export
 #' @examples
@@ -41,7 +42,7 @@
 #'               dat,
 #'               all_mods  = c("vonbertalanffy"),
 #'               random = c("z0"),
-#'               run = list(nit = 5000, nburnin = 1000, nthin = 10, nch = 3))
+#'               run = list(nit = 500, nburnin = 100, nthin = 10, nch = 3))
 #' out$tab
 #'
 Gro_run<-function(x, 
@@ -89,8 +90,11 @@ Gro_run<-function(x,
                       run = run,
                       model_type = model_type,
                       x = x)
-  
-  out=list()
+
+
+  # outnim=c()
+  # outnim$coeff= outnim$WAIC$WAIC = outnim$WAIC$lppd=1
+   out=list()
   out$model=list(model_type = model_type,
                  random = random_mod,
                  coef = as.data.frame(outnim$coef),

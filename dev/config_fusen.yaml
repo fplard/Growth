@@ -23,6 +23,7 @@ flat_nimble.Rmd:
   path: dev/flat_nimble.Rmd
   state: active
   R:
+  - R/conv_plot.R
   - R/gro_writenimblecode.R
   - R/hist_post.R
   - R/rhatfun.R
@@ -30,6 +31,7 @@ flat_nimble.Rmd:
   tests:
   - tests/testthat/test-rhatfun.R
   - tests/testthat/test-hist_post.R
+  - tests/testthat/test-conv_plot.R
   - tests/testthat/test-gro_writenimblecode.R
   vignettes: vignettes/useful-functions.Rmd
   inflate:

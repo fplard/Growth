@@ -88,24 +88,36 @@ runnimble <- function(model,
                       x = 0
                       
 ) {
-  ## This block is necessary because nimble keeps some big temporary files that saturate memory
-  ## needs to be changed when nimble will have solved these issues
-  B <- paste0(tempdir(check = TRUE), '\\tempesw',x)
-  dir.create(B)
-  saveRDS(list(model_nim = model, 
-               const_nim = const, 
-               data_nim = data_nim, 
-               inits_nim = inits_nim,
-                run = run,
-               parameters = param,
-               model_type = model_type), 
-          file = paste0(B,"\\arg.rds"))
-  le_chemin_script <- system.file("nimblescript.R", package = "Growth")
-  system2("Rscript", paste0(le_chemin_script," ",B,"\\arg.rds"), stdout = T,
-          stderr = T,  invisible = F)
-  chain_output <- readRDS(normalizePath(paste0(B,"\\arg.rds")))
-  unlink(B, recursive = TRUE)
+  # # This block is necessary because nimble keeps some big temporary files that saturate memory
+  # # needs to be changed when nimble will have solved these issues
+  # B <- paste0(tempdir(check = TRUE), '\\tempesw',x)
+  # dir.create(B)
+  # saveRDS(list(model_nim = model,
+  #              const_nim = const,
+  #              data_nim = data_nim,
+  #              inits_nim = inits_nim,
+  #               run = run,
+  #              parameters = param,
+  #              model_type = model_type),
+  #         file = paste0(B,"\\arg.rds"))
+  # le_chemin_script <- system.file("nimblescript.R", package = "Growth")
+  # system2("Rscript", paste0(le_chemin_script," ",B,"\\arg.rds"), stdout = T,
+  #         stderr = T,  invisible = F)
+  # chain_output <- readRDS(normalizePath(paste0(B,"\\arg.rds")))
+  # unlink(B, recursive = TRUE)
   ####
+  library(nimble)
+  nimbleOptions(showCompilerOutput = F,
+              verbose = F)
+
+  chain_output <- nimbleMCMC(code = model,
+                                 constants = const,
+                                 data = data_nim,
+                                 inits = inits_nim,
+                                 nburnin = run$nburnin, niter = run$nit,
+                                 nchains = run$nch, thin = run$nthin,progressBar=TRUE,
+                                 monitors = param, WAIC = TRUE, summary =FALSE)
+
   
   mval=(run$nit-run$nburnin)/run$nthin
   if(run$nch ==1){
@@ -120,11 +132,10 @@ runnimble <- function(model,
     rb2[(1:mval)+mval*(i-1),]=chain_output$samples[[i]]
   }
   colnames(rb2)<-colnames(chain_output$samples[[1]])
-  
+
   if(run$nch >1){
     conv=Rhatfun(rb,run$nch,mval,dim(rb)[3])
   }else{conv = NULL}
-  
   return(list(coef = rb2, 
               convergence = conv,
               WAIC = chain_output$WAIC)
