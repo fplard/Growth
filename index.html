@@ -85,6 +85,8 @@
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">Growth</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
+<span></span>
 <span></span>
 <span><span class="co">## basic example code</span></span>
 <span><span class="co">#Create a simple data frame</span></span>
@@ -100,7 +102,7 @@
 <span><span class="co">#               fabens including an individual random effect on gamma </span></span>
 <span><span class="co">#               fabens including no individual random effect</span></span>
 <span><span class="va">out</span> <span class="op">=</span> <span class="fu"><a href="reference/Gro_analysis.html">Gro_analysis</a></span><span class="op">(</span><span class="va">dat</span>, all_mods  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"vonbertalanffy"</span>, <span class="st">"gompertz"</span><span class="op">)</span>,</span>
-<span>                   random <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>vonbertalanffy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"z0"</span>, <span class="st">"z0, zinf"</span><span class="op">)</span>, gompertz <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"alpha0"</span>, <span class="st">""</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   random <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>vonbertalanffy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"z0"</span>, <span class="st">"z0, zinf"</span><span class="op">)</span>, gompertz <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"alpha"</span>, <span class="st">""</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>                   run <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>nit <span class="op">=</span> <span class="fl">1000</span>, nburnin <span class="op">=</span> <span class="fl">100</span>, nthin <span class="op">=</span> <span class="fl">1</span>, nch <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#Look at best model predictions and convergence</span></span>
