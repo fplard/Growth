@@ -148,7 +148,7 @@ if(mod == "gompertz"){
        z[j] ~dnorm(zinf[IND[j]] * (1 - z0[IND[j]] *exp(- gamma[IND[j]] * age[j]))^(P[IND[j]]), sigma_res)}}"
     model <- function(age,coef){
   
-       coef$mu_zinf * (1 - coef$mu_z0* exp(- coef$mu_gamma * age))^(P)
+       coef$mu_zinf * (1 - coef$mu_z0* exp(- coef$mu_gamma * age))^(coef$mu_P)
     }
      inits <-  list(mu_z0= 1,mu_P = 1,
                  mu_zinf = max(data$z),

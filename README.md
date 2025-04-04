@@ -41,6 +41,8 @@ browseURL(path)
 
 ``` r
 library(Growth)
+library(tidyverse)
+
 
 ## basic example code
 #Create a simple data frame
@@ -56,7 +58,7 @@ dat = data.frame(Age = Age, MeasurementValue = MeasurementValue,
 #               fabens including an individual random effect on gamma 
 #               fabens including no individual random effect
 out = Gro_analysis(dat, all_mods  = c("vonbertalanffy", "gompertz"),
-                   random = list(vonbertalanffy = c("z0", "z0, zinf"), gompertz = c("alpha0", "")),
+                   random = list(vonbertalanffy = c("z0", "z0, zinf"), gompertz = c("alpha", "")),
                    run = list(nit = 1000, nburnin = 100, nthin = 1, nch = 1))
 
 #Look at best model predictions and convergence

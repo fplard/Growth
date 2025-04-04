@@ -65,8 +65,7 @@ Gro_analysis <- function(data_weight,
     mutate(age = Age ,
            z = MeasurementValue ,
            IND = as.numeric(factor(AnimalAnonID, labels = c(1:length(unique(AnimalAnonID))))))
-
-  }
+ }
   
   #Fitting the different growth models
   all_fits_tab=c()

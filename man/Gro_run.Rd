@@ -57,5 +57,4 @@ out = Gro_run(1,
               random = c("z0"),
               run = list(nit = 500, nburnin = 100, nthin = 10, nch = 3))
 out$tab
-
 }

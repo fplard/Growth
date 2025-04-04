@@ -111,10 +111,6 @@ runnimble <- function(model,
   if(run$nch >1){
     conv=Rhatfun(rb,run$nch,mval,dim(rb)[3])
   }else{conv = NULL}
- #  rb2=list()
- #  conv=1
- #  chain_output=list()
- # chain_output$WAIC$WAIC = chain_output$WAIC$lppd=1
   return(list(coef = rb2, 
               convergence = conv,
               WAIC = chain_output$WAIC)
