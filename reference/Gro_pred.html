@@ -95,7 +95,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> |-------------------------------------------------------|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |-------------|-------------|-------------|-------------|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |-------------------------------------------------------|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [Warning] There are 51 individual pWAIC values that are greater than 0.4. This may indicate that the WAIC estimate is unstable (Vehtari et al., 2017), at least in cases without grouping of data nodes or multivariate data nodes.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [Warning] There are 44 individual pWAIC values that are greater than 0.4. This may indicate that the WAIC estimate is unstable (Vehtari et al., 2017), at least in cases without grouping of data nodes or multivariate data nodes.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">Gro_pred</span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat</span>, </span></span>
 <span class="r-in"><span>              out <span class="op">=</span> <span class="va">out</span><span class="op">$</span><span class="va">model</span>, </span></span>
@@ -106,24 +106,24 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   widthDetails.titleGrob  ggplot2</span>
 <span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="va">summary</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                   mean           sd       QI 2.5      QI 97.5     Rhat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mu_gamma  5.949081e-02  0.015344519 2.732279e-02   0.09500183 1.130053</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mu_z0     2.317887e+00  2.410190288 4.007802e-02   9.03080982 1.128475</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mu_zinf   2.316421e+02 61.477034516 1.555872e+02 425.25754508 1.722427</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sigma_res 3.049626e-03  0.004925567 6.227654e-04   0.02500482 2.648070</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mu_gamma  6.520213e-02  0.016158837 3.866164e-02   0.09563949 1.269016</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mu_z0     3.245858e+00  3.266516356 5.876789e-02  12.32467360 1.233799</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mu_zinf   1.834975e+02 34.921295194 1.324161e+02 267.81396283 1.221710</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sigma_res 3.653177e-03  0.005247518 7.359723e-04   0.01555129 1.340584</span>
 <span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="va">predictions</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 102 × 4</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      Age  mean Conf_Int_low Conf_Int_up</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>   0    2.32       0.040<span style="text-decoration: underline;">1</span>        9.03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>   0.1  3.60       1.35         10.2 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>   0.2  4.87       2.62         11.2 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>   0.3  6.13       3.87         12.3 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>   0.4  7.38       5.10         13.4 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>   0.5  8.63       6.27         14.5 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>   0.6  9.87       7.46         15.6 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>   0.7 11.1        8.65         16.7 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>   0.8 12.3        9.76         17.7 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>   0.9 13.5       10.9          18.9 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>   0    3.25       0.058<span style="text-decoration: underline;">8</span>        12.3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>   0.1  4.37       1.25          13.2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>   0.2  5.48       2.39          14.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>   0.3  6.59       3.52          15.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>   0.4  7.69       4.63          16.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>   0.5  8.78       5.73          16.9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>   0.6  9.87       6.82          17.8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>   0.7 10.9        7.90          18.7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>   0.8 12.0        8.98          19.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>   0.9 13.1       10.1           20.4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 92 more rows</span></span>
 <span class="r-in"><span><span class="va">p</span><span class="op">$</span><span class="va">GOF</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $normal</span>
@@ -155,7 +155,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
