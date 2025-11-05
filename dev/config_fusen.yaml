@@ -28,8 +28,10 @@ flat_nimble.Rmd:
   - R/hist_post.R
   - R/rhatfun.R
   - R/runnimble.R
+  - R/sum_nim.R
   tests:
   - tests/testthat/test-rhatfun.R
+  - tests/testthat/test-sum_nim.R
   - tests/testthat/test-hist_post.R
   - tests/testthat/test-conv_plot.R
   - tests/testthat/test-gro_writenimblecode.R
