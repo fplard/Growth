@@ -92,11 +92,11 @@
 <span class="r-in"><span>                    maxval <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>z0 <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>, </span></span>
 <span class="r-in"><span>                    minval<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>z0 <span class="op">=</span> <span class="fl">0</span>, zinf <span class="op">=</span> <span class="fl">0</span>, gamma <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> expression(sigma_res ~ dunif(0, 50), mu_z0 ~ dunif(0, 5), for (i in 1:Nind) {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> expression(sigma_res ~ dunif(0, 150), mu_z0 ~ dunif(0, 5), for (i in 1:Nind) {</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     z0[i] &lt;- mu_z0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }, mu_zinf ~ dunif(0, 1000), for (i in 1:Nind) {</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     zinf[i] &lt;- mu_zinf</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> }, mu_gamma ~ dunif(0, 1000), sigma_gamma ~ dunif(0, 50), for (i in 1:Nind) {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> }, mu_gamma ~ dunif(0, 1000), sigma_gamma ~ dunif(0, 150), for (i in 1:Nind) {</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     gamma[i] ~ dnorm(mu_gamma, sd = sigma_gamma)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }, for (j in 1:N) {</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     {</span>
@@ -115,7 +115,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>
