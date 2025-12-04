@@ -93,8 +93,8 @@ if(mod == "gompertz"){
                  
                  
   )
-  maxval = list(xinfl =  max(data$age), zinf = max(data$z)*50, gamma = 20)
-  minval = list(xinfl = min(data$age), zinf = 0, gamma = 0)
+  maxval = list(xinfl =  max(data$age)*10, zinf = max(data$z)*50, gamma = 20)
+  minval = list(xinfl =0, zinf = 0, gamma = 0)
   param = c("mu_xinfl","mu_zinf", "mu_gamma",
             "sigma_res",
             "xinfl", "zinf", "gamma")

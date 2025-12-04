@@ -438,8 +438,8 @@ if(mod == "gompertz"){
                  
                  
   )
-  maxval = list(xinfl =  max(data$age), zinf = max(data$z)*50, gamma = 20)
-  minval = list(xinfl = min(data$age), zinf = 0, gamma = 0)
+  maxval = list(xinfl =  max(data$age)*10, zinf = max(data$z)*50, gamma = 20)
+  minval = list(xinfl =0, zinf = 0, gamma = 0)
   param = c("mu_xinfl","mu_zinf", "mu_gamma",
             "sigma_res",
             "xinfl", "zinf", "gamma")
@@ -677,7 +677,7 @@ Gro_pred <- function(data, out, Cred_int = c(0.025,0.975),title = "") {
   
   # Predictions
   #Vector for predictions
-  zQuant <- tibble(Age = seq(min(data$Age), max(data$Age)+0.1, 0.1),
+  zQuant <- tibble(Age = seq(round(min(data$Age)), round(max(data$Age))+0.1, 0.1),
                    mean = numeric(1),
                    Conf_Int_low = numeric(1),
                    Conf_Int_up = numeric(1)
@@ -701,7 +701,7 @@ Gro_pred <- function(data, out, Cred_int = c(0.025,0.975),title = "") {
   }
   
   data_pred = data%>%
-    mutate(Age= round(Age,0.1))%>%
+    mutate(Age= round(Age,1))%>%
     group_by(Age)%>%
     summarize(MeasurementValue = mean(MeasurementValue))%>%
     left_join(zQuant%>%select(Age, mean), by = "Age")

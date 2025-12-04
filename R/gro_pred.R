@@ -96,7 +96,7 @@ Gro_pred <- function(data, out, Cred_int = c(0.025,0.975),title = "") {
   
   # Predictions
   #Vector for predictions
-  zQuant <- tibble(Age = seq(min(data$Age), max(data$Age)+0.1, 0.1),
+  zQuant <- tibble(Age = seq(round(min(data$Age)), round(max(data$Age))+0.1, 0.1),
                    mean = numeric(1),
                    Conf_Int_low = numeric(1),
                    Conf_Int_up = numeric(1)
@@ -120,7 +120,7 @@ Gro_pred <- function(data, out, Cred_int = c(0.025,0.975),title = "") {
   }
   
   data_pred = data%>%
-    mutate(Age= round(Age,0.1))%>%
+    mutate(Age= round(Age,1))%>%
     group_by(Age)%>%
     summarize(MeasurementValue = mean(MeasurementValue))%>%
     left_join(zQuant%>%select(Age, mean), by = "Age")

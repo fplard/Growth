@@ -27,12 +27,12 @@ test_that("Gro_writenimblecode works", {
 )
   expect_equal(
     a%>%as.character(),
-               c("sigma_res ~ dunif(0, 50)", "mu_z0 ~ dunif(0, 5)", 
+               c("sigma_res ~ dunif(0, 150)", "mu_z0 ~ dunif(0, 5)", 
                  "for (i in 1:Nind) {\n    z0[i] <- mu_z0\n}",
                  "mu_zinf ~ dunif(0, 1000)",
                  "for (i in 1:Nind) {\n    zinf[i] <- mu_zinf\n}", 
                  "mu_gamma ~ dunif(0, 1000)", 
-                 "sigma_gamma ~ dunif(0, 50)", 
+                 "sigma_gamma ~ dunif(0, 150)", 
                  "for (i in 1:Nind) {\n    gamma[i] ~ dnorm(mu_gamma, sd = sigma_gamma)\n}", 
                  "for (j in 1:N) {\n    {\n        logz[j] ~ dnorm(z0[IND[j]] + zinf[IND[j]] * (1 - exp(-gamma[IND[j]] * logx[j])), sigma_res)\n    }\n}" ))
 })

@@ -50,7 +50,7 @@ Gro_writenimblecode <- function(params, model,
     assert_that(all(names(minval) %in% params))
     }
     
-prior ="sigma_res~ dunif(0, 50)"
+prior ="sigma_res~ dunif(0, 150)"
   for (p in params){
     assert_that(str_detect(model, p), msg = glue("{p} not included in the likelihood of the model"))
     
@@ -59,7 +59,7 @@ prior ="sigma_res~ dunif(0, 50)"
       if(p %in% random){
         prior <- glue("{prior} 
          mu_{p}~ dunif({minval[[p]]}, {maxval[[p]]})
-         sigma_{p}~ dunif(0, 50)
+         sigma_{p}~ dunif(0, 150)
          for (i in 1:Nind){{
          {p}[i] ~ dnorm(mu_{p}, sd = sigma_{p}) }}
         ")
